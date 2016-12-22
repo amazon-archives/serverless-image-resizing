@@ -1,0 +1,16 @@
+{
+  "name": "image-resize",
+  "version": "1.0.0",
+  "description": "Serverless image resizing",
+  "readme": "Serverless image resizing",
+  "repository": "https://github.com/awslabs/serverless-image-resizing",
+  "license": "Apache-2.0",
+  "main": "index.js",
+  "dependencies": {
+    "async": "^2.1.1",
+    "sharp": "^0.16.0"
+  },
+  "devDependencies": {
+    "aws-sdk": "^2.6.9"
+  }
+}
