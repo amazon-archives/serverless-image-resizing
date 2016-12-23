@@ -22,6 +22,8 @@ Resizes images on the fly using Amazon S3, AWS Lambda, and Amazon API Gateway. U
   ./bin/deploy us-west-2
   ```
 
+  The deployment script requires the [AWS CLI][cli] version 1.11.19 or newer to be installed.
+
 1. Test the function
 
 	Upload an image to the S3 bucket and try to resize it via your web browser to different sizes, e.g. with an image uploaded in the bucket called image.png:
@@ -39,3 +41,4 @@ This reference architecture sample is [licensed][license] under Apache 2.0.
 [license]: LICENSE
 [sharp]: https://github.com/lovell/sharp
 [amazon-linux]: https://aws.amazon.com/blogs/compute/nodejs-packages-in-lambda/
+[cli]: https://aws.amazon.com/cli/
