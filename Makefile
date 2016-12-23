@@ -1,11 +1,11 @@
-.PHONY: image package clean
+.PHONY: all image package clean
 
-all: image package
+all: package
 
 image:
 	docker build --tag amazonlinux:nodejs .
 
-package:
+package: image
 	docker run --rm --volume ${PWD}/lambda:/build amazonlinux:nodejs npm install --production
 
 clean:
