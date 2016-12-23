@@ -16,11 +16,7 @@ Resizes images on the fly using Amazon S3, AWS Lambda, and Amazon API Gateway. U
 
 1. Deploy the CloudFormation stack
 
-  Run `bin/deploy REGION` to deploy the CloudFormation stack. It will create a temporary Amazon S3 bucket, package and upload the function, and create the Lambda function, Amazon API Gateway RestApi, and an S3 bucket for images via CloudFormation. e.g.:
-
-  ```console
-  ./bin/deploy us-west-2
-  ```
+  Run `bin/deploy` to deploy the CloudFormation stack. It will create a temporary Amazon S3 bucket, package and upload the function, and create the Lambda function, Amazon API Gateway RestApi, and an S3 bucket for images via CloudFormation.
 
   The deployment script requires the [AWS CLI][cli] version 1.11.19 or newer to be installed.
 

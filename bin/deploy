@@ -2,13 +2,8 @@
 
 set -o errexit
 
-if [ $# -lt 1 ]; then
-  echo "Usage: deploy REGION"
-  exit
-fi
-
 stack_name=ServerlessImageResize
-region="$1"
+region="$(aws configure get region)"
 bucket_name="temp-serverless-resize-$(openssl rand -hex 8)"
 account_id="$(aws sts get-caller-identity --query Account --output text \
   | xargs echo -n)"
@@ -18,24 +13,21 @@ set -o xtrace
 sed -e "s/REGION/${region}/g" -e "s/ACCOUNT_ID/${account_id}/g" \
   api-template.yaml > deploy/api.yaml
 
-aws s3 mb "s3://${bucket_name}" --region="${region}"
+aws s3 mb "s3://${bucket_name}"
 
 aws cloudformation package \
   --output-template-file=deploy/output.yaml \
   --template-file=image-resize.yaml \
   --s3-bucket="${bucket_name}" \
-  --region="${region}"
 
 aws cloudformation deploy \
   --template-file=deploy/output.yaml \
   --stack-name="${stack_name}" \
-  --capabilities=CAPABILITY_NAMED_IAM \
-  --region="${region}"
+  --capabilities=CAPABILITY_NAMED_IAM
 
-aws s3 rb --force "s3://${bucket_name}" --region="${region}"
+aws s3 rb --force "s3://${bucket_name}"
 
 aws cloudformation describe-stacks \
   --stack-name "${stack_name}" \
   --query Stacks[].Outputs \
-  --region="${region}" \
   --output table
