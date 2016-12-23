@@ -1,4 +1,4 @@
-.PHONY: image package
+.PHONY: image package clean
 
 all: image package
 
