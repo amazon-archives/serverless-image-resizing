@@ -8,9 +8,11 @@ Resizes images on the fly using Amazon S3, AWS Lambda, and Amazon API Gateway. U
 
 1. Build the Lambda function
 
-   The Lambda function uses [sharp][sharp] for image resizing which requires native extensions. In order to run on Lambda, it must be packaged on Amazon Linux. To do this, you can either run `npm install` on an [Amazon EC2 instance running Amazon Linux][amazon-linux] or use the Amazon Linux Docker container image.
+   The Lambda function uses [sharp][sharp] for image resizing which requires native extensions. In order to run on Lambda, it must be packaged on Amazon Linux. You can accomplish this in one of two ways:
 
-   To use Docker: run `make` from the project directory and it'll download Amazon Linux, install Node.js and developer tools, and build the extensions.
+   - Upload the contents of the `lambda` subdirectory to a [Amazon EC2 instance running Amazon Linux][amazon-linux] and run `npm install`, or
+
+   - Use the Amazon Linux Docker container image to build the package using your local system. This repo includes Makefile that will download Amazon Linux, install Node.js and developer tools, and build the extensions using Docker. Run `make all`.
 
 1. Deploy the CloudFormation stack
 
@@ -28,10 +30,12 @@ Resizes images on the fly using Amazon S3, AWS Lambda, and Amazon API Gateway. U
 	- http://[BucketWebsiteHost]/90x90/image.png
 	- http://[BucketWebsiteHost]/40x40/image.png
 
+	You can find the BucketWebsiteUrl in the table of outputs displayed on a successful invocation of the deploy script.
+
 ## License
 
 This reference architecture sample is [licensed][license] under Apache 2.0.
 
+[license]: LICENSE
 [sharp]: https://github.com/lovell/sharp
 [amazon-linux]: https://aws.amazon.com/blogs/compute/nodejs-packages-in-lambda/
-[license]: LICENSE
