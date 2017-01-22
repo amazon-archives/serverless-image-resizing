@@ -1,10 +1,9 @@
 var AWS = require('aws-sdk');
 var S3 = new AWS.S3();
-var sharp = require('sharp');
-var waterfall = require('async/waterfall');
+var Sharp = require('sharp');
 
-var bucket = process.env.BUCKET;
-var url = process.env.URL;
+var BUCKET = process.env.BUCKET;
+var URL = process.env.URL;
 
 exports.handler = function(event, context) {
   var key = event.queryStringParameters.key;
@@ -13,42 +12,24 @@ exports.handler = function(event, context) {
   var height = parseInt(match[2], 10);
   var originalKey = match[3];
 
-  waterfall([
-    function(callback) {
-      S3.getObject({Bucket: bucket, Key: originalKey}).promise()
-        .then((data) => callback(null, data.Body, data.ContentType))
-        .catch((err) => callback(err));
-    },
-
-    function(buffer, contentType, callback) {
-      sharp(buffer)
+  S3.getObject({Bucket: BUCKET, Key: originalKey}).promise()
+    .then((data) => Sharp(data.Body)
         .resize(width, height)
+        .toFormat('png')
         .toBuffer()
-        .then((buffer) => callback(null, buffer, contentType))
-        .catch((err) => callback(err));
-    },
-
-    function(buffer, contentType, callback) {
-      var params = {
+    )
+    .then((buffer) => S3.putObject({
         Body: buffer,
-        Bucket: bucket,
-        ContentType: contentType,
+        Bucket: BUCKET,
+        ContentType: 'image/png',
         Key: key
-      };
-
-      S3.putObject(params).promise()
-        .then((data) => callback(null, true))
-        .catch((err) => callback(err));
-    }
-  ], function(err, result) {
-    if (!err) {
-      context.succeed({
+      }).promise()
+    )
+    .then(() => context.succeed({
         statusCode: '301',
-        headers: {'location': `${url}/${key}`},
+        headers: {'location': `${URL}/${key}`},
         body: ''
-      });
-    } else {
-      context.fail(err);
-    }
-  });
+      })
+    )
+    .catch((err) => context.fail(err))
 }

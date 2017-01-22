@@ -7,6 +7,8 @@ image:
 
 package: image
 	docker run --rm --volume ${PWD}/lambda:/build amazonlinux:nodejs npm install --production
+	cd lambda && zip -r ../dist/function.zip *
 
 clean:
-	rm -r lambda/node_modules && docker rmi --force amazonlinux:nodejs
+	rm -r lambda/node_modules
+	docker rmi --force amazonlinux:nodejs
