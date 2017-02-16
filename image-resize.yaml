@@ -30,7 +30,7 @@ Resources:
   ResizeFunction:
     Type: AWS::Serverless::Function
     Properties:
-      CodeUri: ./lambda
+      CodeUri: ./dist/function.zip
       Handler: index.handler
       Runtime: nodejs4.3
       MemorySize: 1536
