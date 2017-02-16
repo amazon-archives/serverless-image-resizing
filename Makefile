@@ -1,6 +1,6 @@
 .PHONY: all image package dist clean
 
-all: package
+all: clean dist
 
 image:
 	docker build --tag amazonlinux:nodejs .
@@ -12,5 +12,6 @@ dist: package
 	cd lambda && zip -r ../dist/function.zip *
 
 clean:
-	rm -r lambda/node_modules
-	docker rmi --force amazonlinux:nodejs
+	if [ -a lambda/node_modules ]; then rm -r lambda/node_modules; fi;
+	if [ -a dist/function.zip ]; then rm -r dist/function.zip; fi;
+	docker images --quiet amazonlinux:nodejs | xargs docker rmi --force
