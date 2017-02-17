@@ -4,7 +4,7 @@ ADD etc/nodesource.gpg.key /etc
 
 WORKDIR /tmp
 
-RUN yum -y aws-cli \ 
+RUN yum -y install aws-cli \ 
         findutils \
         gcc-c++ \
         zip && \
@@ -17,3 +17,4 @@ RUN yum -y aws-cli \
     yum clean all && \
     rm --force ns.rpm
 
+WORKDIR /build
