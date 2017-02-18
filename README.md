@@ -20,9 +20,9 @@ The complete setup can be done with Docker. Therefore you only need to [install]
 
   The deployment script requires the [AWS CLI][cli] version 1.11.19 or newer to be installed. This is brought to you by using the previously built Docker image. You need to have you AWS configuration in a folder `.aws` next to this project dir. As first time user you have to run `make awsconfigure`.
 
-  Run `make deploy` to deploy the CloudFormation stack. It will create a temporary Amazon S3 bucket, package and upload the function, and create the Lambda function, Amazon API Gateway RestApi, and an S3 bucket for images via CloudFormation.
+  Run `make deploy` to deploy the CloudFormation stack. It will create a temporary Amazon S3 bucket, package and upload the function, and create the Lambda function, Amazon API Gateway REST API, and an S3 bucket for images via CloudFormation.
 
-  Please be aware that you might prefix the _deploy_ target in the _Makefile_ with `winpty` depending on your environment under windows!
+  Please be aware that you might prefix the _deploy_ target in the _Makefile_ with `winpty` depending on your environment under Windows!
 
 1. Test the function
 
