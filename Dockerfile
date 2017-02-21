@@ -14,6 +14,4 @@ RUN yum -y install gcc-c++ && \
     yum clean all && \
     rm --force ns.rpm
 
-VOLUME /build
-
 WORKDIR /build
