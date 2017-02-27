@@ -17,8 +17,3 @@ RUN yum -y aws-cli \
     yum clean all && \
     rm --force ns.rpm
 
-RUN echo complete -C '/usr/bin/aws_completer' aws >> /root/.bashrc
-
-VOLUME /build
-
-WORKDIR /build
