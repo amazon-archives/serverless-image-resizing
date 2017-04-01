@@ -30,7 +30,7 @@ Resizes images on the fly using Amazon S3, AWS Lambda, and Amazon API Gateway. U
 
 	You can find the BucketWebsiteUrl in the table of outputs displayed on a successful invocation of the deploy script.
 
-**Note:** If you create the Lambda function yourself, make sure to select Node.js version 4.3.
+**Note:** If you create the Lambda function yourself, make sure to select Node.js version 6.10.
 
 ## License
 
