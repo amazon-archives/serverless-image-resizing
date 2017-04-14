@@ -5,7 +5,7 @@ var Sharp = require('sharp');
 var BUCKET = process.env.BUCKET;
 var URL = process.env.URL;
 
-exports.handler = function(event, context) {
+exports.handler = function(event, context, callback) {
   var key = event.queryStringParameters.key;
   var match = key.match(/(\d+)x(\d+)\/(.*)/);
   var width = parseInt(match[1], 10);
@@ -25,11 +25,11 @@ exports.handler = function(event, context) {
         Key: key
       }).promise()
     )
-    .then(() => context.succeed({
+    .then(() => callback(null, {
         statusCode: '301',
         headers: {'location': `${URL}/${key}`},
         body: ''
       })
     )
-    .catch((err) => context.fail(err))
+    .catch((err) => callback(err))
 }
