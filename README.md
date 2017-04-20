@@ -34,6 +34,8 @@ The complete setup can be done with Docker. Therefore you only need to [install]
 
 	You can find the BucketWebsiteUrl in the table of outputs displayed on a successful invocation of the deploy script.
 
+**Note:** If you create the Lambda function yourself, make sure to select Node.js version 6.10.
+
 ## License
 
 This reference architecture sample is [licensed][license] under Apache 2.0.

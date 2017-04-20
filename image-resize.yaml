@@ -32,7 +32,7 @@ Resources:
     Properties:
       CodeUri: ./dist/function.zip
       Handler: index.handler
-      Runtime: nodejs4.3
+      Runtime: nodejs6.10
       MemorySize: 1536
       Timeout: 60
       Environment:
