@@ -26,7 +26,7 @@ Resizes images on the fly using Amazon S3, AWS Lambda, and Amazon API Gateway. U
 	
 	- http://[BucketWebsiteHost]/image.png;w=300;h=300
 	
-        We may omit either 'w' or 'h' parameter. In that case, height or width will be adjust automatically keeping the aspect ratio of image:
+	We may omit either 'w' or 'h' parameter. In that case, height or width will be adjust automatically keeping the aspect ratio of image:
 	
 	- http://[BucketWebsiteHost]/image.png;w=400
 	- http://[BucketWebsiteHost]/image.png;h=350
