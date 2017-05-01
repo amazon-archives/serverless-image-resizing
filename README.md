@@ -23,10 +23,13 @@ Resizes images on the fly using Amazon S3, AWS Lambda, and Amazon API Gateway. U
 1. Test the function
 
 	Upload an image to the S3 bucket and try to resize it via your web browser to different sizes, e.g. with an image uploaded in the bucket called image.png:
-
+	
 	- http://[BucketWebsiteHost]/image.png;w=300;h=300
-	- http://[BucketWebsiteHost]/image.png;w=400  [height will be adjusted automatically maintaining aspect ratio]
-	- http://[BucketWebsiteHost]/image.png;h=350  [width will be adjusted automatically maintaining aspect ratio]
+	
+        We may omit either 'w' or 'h' parameter. In that case, height or width will be adjust automatically keeping the aspect ratio of image:
+	
+	- http://[BucketWebsiteHost]/image.png;w=400
+	- http://[BucketWebsiteHost]/image.png;h=350
 
 	You can find the BucketWebsiteUrl in the table of outputs displayed on a successful invocation of the deploy script.
 
