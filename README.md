@@ -6,6 +6,8 @@ Resizes images on the fly using Amazon S3, AWS Lambda, and Amazon API Gateway. U
 
 ## Usage
 
+The complete setup can be done with Docker. Therefore you only need to [install][docker] it.
+
 1. Build the Lambda function
 
    The Lambda function uses [sharp][sharp] for image resizing which requires native extensions. In order to run on Lambda, it must be packaged on Amazon Linux. You can accomplish this in one of two ways:
@@ -16,9 +18,11 @@ Resizes images on the fly using Amazon S3, AWS Lambda, and Amazon API Gateway. U
 
 1. Deploy the CloudFormation stack
 
-  Run `bin/deploy` to deploy the CloudFormation stack. It will create a temporary Amazon S3 bucket, package and upload the function, and create the Lambda function, Amazon API Gateway RestApi, and an S3 bucket for images via CloudFormation.
+  The deployment script requires the [AWS CLI][cli] version 1.11.19 or newer to be installed. This is brought to you by using the previously built Docker image. You need to have you AWS configuration in a folder `.aws` next to this project dir. As first time user you have to run `make awsconfigure`.
 
-  The deployment script requires the [AWS CLI][cli] version 1.11.19 or newer to be installed.
+  Run `make deploy` to deploy the CloudFormation stack. It will create a temporary Amazon S3 bucket, package and upload the function, and create the Lambda function, Amazon API Gateway REST API, and an S3 bucket for images via CloudFormation.
+
+  Please be aware that you might prefix the _deploy_ target in the _Makefile_ with `winpty` depending on your environment under Windows!
 
 1. Test the function
 
@@ -40,3 +44,4 @@ This reference architecture sample is [licensed][license] under Apache 2.0.
 [sharp]: https://github.com/lovell/sharp
 [amazon-linux]: https://aws.amazon.com/blogs/compute/nodejs-packages-in-lambda/
 [cli]: https://aws.amazon.com/cli/
+[docker]: https://www.docker.com/products/docker
