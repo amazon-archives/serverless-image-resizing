@@ -1,16 +1,21 @@
 # Serverless Image Resizing
 
+![](https://pbs.twimg.com/media/CriRuZNVIAAPNm7.jpg)
+
 ## Description
 
 This is a fork of the sample serverless-image-resizing repo:
+[https://github.com/awslabs/serverless-image-resizing]()
 
-`https://github.com/awslabs/serverless-image-resizing`
+This fork is specifically for managing the neighbourly user-uploaded images, and provide a seamless drop-in replacement for the image resizing functionality currently provided by the LiipImagine Symfony Bundle.
 
-This fork is specifically for managing the neighbourly user-uploaded images, and provide a seamless drop-in replacement for the image resizing functionality currently provided by the LiipImagine Symfony Bundle. 
+A good explanation of how this process works can be found in this blog post:
+[https://aws.amazon.com/blogs/compute/resize-images-on-the-fly-with-amazon-s3-aws-lambda-and-amazon-api-gateway/]()
+ 
 
 The main differences between this fork and the original one are:
 
-- This reads the source images from one bucket, and writes the scaled images to a separate one (hence the required SRC_BUCKET and DST_BUCKET environment variables)
+- This reads the source images from one bucket, and writes the scaled images to a separate one (hence the required `SRC_BUCKET` and `DST_BUCKET` environment variables, as well as `URL`)
 
 - This version reads a JSON file containing a list of filter names and descriptions. This file has been generated from the PHP YAML config file in the neighboury project.
 
