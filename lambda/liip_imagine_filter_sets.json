@@ -1,0 +1,581 @@
+{
+  "iphone": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          90,
+          90
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "user_profile_profile_picture": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          90,
+          90
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "user_avatar_picture": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          30,
+          30
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "email_message_profile_picture": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          40,
+          40
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "user_profile_page_picture": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          200,
+          200
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "email_message_image": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          150,
+          150
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "logo": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          100,
+          100
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "message_image_thumbnail": {
+    "quality": 75,
+    "filters": {
+      "upscale": {
+        "min": [
+          256,
+          256
+        ]
+      },
+      "thumbnail": {
+        "size": [
+          256,
+          256
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "message_image_thumbnail_resize": {
+    "quality": 75,
+    "filters": {
+      "upscale": {
+        "min": [
+          256,
+          256
+        ]
+      },
+      "thumbnail": {
+        "size": [
+          256,
+          256
+        ],
+        "mode": "inset"
+      }
+    }
+  },
+  "message_image_thumbnail_stuffapp": {
+    "quality": 75,
+    "filters": {
+      "upscale": {
+        "min": [
+          300,
+          200
+        ]
+      },
+      "thumbnail": {
+        "size": [
+          300,
+          200
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "event_image_thumbnail": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          100,
+          100
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "homecontents_item_thumbnail": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          300,
+          125
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "homecontents_item_print_thumbnail": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          150,
+          150
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "homecontents_item_full_size": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          1200,
+          1200
+        ],
+        "mode": "inset"
+      }
+    }
+  },
+  "business_item_cover_thumbnail": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          660,
+          165
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "business_item_cover_full_size": {
+    "quality": 100,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          1200,
+          1200
+        ],
+        "mode": "inset"
+      }
+    }
+  },
+  "business_item_header_thumbnail": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          660,
+          190
+        ],
+        "mode": "inset"
+      }
+    }
+  },
+  "business_item_header_full_size": {
+    "quality": 100,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          1200,
+          1200
+        ],
+        "mode": "inset"
+      }
+    }
+  },
+  "business_item_logo_thumbnail": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          50,
+          50
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "business_item_logo_full_size": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          200,
+          200
+        ],
+        "mode": "inset"
+      }
+    }
+  },
+  "business_fcsv_widget_thumbnail": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          600,
+          188
+        ],
+        "mode": "inset"
+      }
+    }
+  },
+  "business_fcsv_widget_logo_thumbnail": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          190,
+          46
+        ],
+        "mode": "inset"
+      }
+    }
+  },
+  "message_full_size": {
+    "quality": 75,
+    "filters": {
+      "upscale": {
+        "min": [
+          400,
+          400
+        ]
+      },
+      "thumbnail": {
+        "size": [
+          400,
+          400
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "blog_large": {
+    "quality": 75,
+    "filters": {
+      "upscale": {
+        "min": [
+          600,
+          600
+        ]
+      },
+      "thumbnail": {
+        "size": [
+          1200,
+          1200
+        ],
+        "mode": "inset"
+      }
+    }
+  },
+  "message_max_size": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          1200,
+          1200
+        ],
+        "mode": "inset"
+      }
+    }
+  },
+  "neighbourhood_profile_picture": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          120,
+          120
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "neighbourhood_profile_picture_large": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          600,
+          600
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "helpdesk_preview": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          1200,
+          1200
+        ],
+        "mode": "inset",
+        "allow_upscale": false
+      }
+    }
+  },
+  "blog_post_image": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          300,
+          300
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "header_neighbourhood_map_image": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          400,
+          400
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "1200_high_quality": {
+    "quality": 100,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          1200,
+          1200
+        ],
+        "mode": "inset"
+      }
+    }
+  },
+  "200_low_quality": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          200,
+          200
+        ],
+        "mode": "inset"
+      }
+    }
+  },
+  "300_low_quality": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          300,
+          300
+        ],
+        "mode": "inset"
+      }
+    }
+  },
+  "400_low_quality": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          400,
+          400
+        ],
+        "mode": "inset"
+      }
+    }
+  },
+  "800_low_quality": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          800,
+          800
+        ],
+        "mode": "inset"
+      }
+    }
+  },
+  "100_low_quality": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          100,
+          100
+        ],
+        "mode": "inset"
+      }
+    }
+  },
+  "300_edition_cover": {
+    "quality": 100,
+    "filters": {
+      "relative_resize": {
+        "widen": 300
+      }
+    }
+  },
+  "fullsize_edition": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          1548,
+          2244
+        ],
+        "mode": "inset"
+      }
+    }
+  },
+  "realestate_thumbnail": {
+    "quality": 75,
+    "filters": {
+      "upscale": {
+        "min": [
+          400,
+          300
+        ]
+      },
+      "thumbnail": {
+        "size": [
+          400,
+          300
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "realestate_thumbnail_2x": {
+    "quality": 75,
+    "filters": {
+      "upscale": {
+        "min": [
+          800,
+          600
+        ]
+      },
+      "thumbnail": {
+        "size": [
+          800,
+          600
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "realestate_office_logo_thumbnail": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          74,
+          30
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "realestate_office_logo_thumbnail_2x": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          148,
+          60
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "filler_lead_campaign": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          600,
+          400
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "300_by_232": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          300,
+          232
+        ],
+        "mode": "outbound"
+      }
+    }
+  },
+  "300_by_232_2x": {
+    "quality": 75,
+    "filters": {
+      "thumbnail": {
+        "size": [
+          600,
+          464
+        ],
+        "mode": "outbound"
+      }
+    }
+  }
+}

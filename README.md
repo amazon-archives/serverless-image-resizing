@@ -2,6 +2,27 @@
 
 ## Description
 
+This is a fork of the sample serverless-image-resizing repo:
+
+`https://github.com/awslabs/serverless-image-resizing`
+
+This fork is specifically for managing the neighbourly user-uploaded images, and provide a seamless drop-in replacement for the image resizing functionality currently provided by the LiipImagine Symfony Bundle. 
+
+The main differences between this fork and the original one are:
+
+- This reads the source images from one bucket, and writes the scaled images to a separate one (hence the required SRC_BUCKET and DST_BUCKET environment variables)
+
+- This version reads a JSON file containing a list of filter names and descriptions. This file has been generated from the PHP YAML config file in the neighboury project.
+
+- This version uses the filter names and descriptions above to decide what transformations should be performed on the requested images.
+
+
+Some of the documentation below doesn't apply anymore since the fork (e.g. the cloudformation stuff), but I'll leave it here for reference until replacement / relevant docs can be written. Caveat emptor.
+
+
+
+## Description (original)
+
 Resizes images on the fly using Amazon S3, AWS Lambda, and Amazon API Gateway. Using a conventional URL structure and S3 static website hosting with redirection rules, requests for resized images are redirected to a Lambda function via API Gateway which will resize the image, upload it to S3, and redirect the requestor to the resized image. The next request for the resized image will be served from S3 directly.
 
 ## Usage
