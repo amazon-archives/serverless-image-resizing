@@ -17,12 +17,14 @@ The main differences between this fork and the original one are:
 
 - This reads the source images from one bucket, and writes the scaled images to a separate one (hence the required `SRC_BUCKET` and `DST_BUCKET` environment variables, as well as `URL`)
 
-- This version reads a JSON file containing a list of filter names and descriptions. This file has been generated from the PHP YAML config file in the neighboury project.
+- This version reads a JSON file containing a list of filter names and descriptions. This file has been generated from [a section of the PHP YAML config file in the neighbourly project.](https://github.com/ideahq/neighbourly/blob/master/app/config/config.yml#L1058-L1257) ([Read the source to see how I did that.](https://github.com/ideahq/serverless-image-resizing/blob/master/lambda/index.js#L18) We'll probably change this process later)
 
-- This version uses the filter names and descriptions above to decide what transformations should be performed on the requested images.
+- This version uses the filter names and descriptions defined above to decide what transformations should be performed on the requested images (the original one gets that info directly from the URL, this one maps a portion of URL to one of the above named filters)
 
 
-Some of the documentation below doesn't apply anymore since the fork (e.g. the cloudformation stuff), but I'll leave it here for reference until replacement / relevant docs can be written. Caveat emptor.
+Some of the documentation below doesn't apply anymore since the fork (e.g. the cloudformation stuff), but I'll leave it here for reference until replacement / relevant docs can be written. 
+
+Rest of the original Readme is below. Caveat emptor.
 
 
 
