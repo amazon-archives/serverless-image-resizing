@@ -10,13 +10,26 @@ const BUCKET = process.env.BUCKET;
 const URL = process.env.URL;
 
 exports.handler = function(event, context, callback) {
-  const key = event.queryStringParameters.key;
-  const match = key.match(/(\d+)x(\d+)\/(.*)/);
-  const width = parseInt(match[1], 10);
-  const height = parseInt(match[2], 10);
-  const originalKey = match[3];
-
-  S3.getObject({Bucket: BUCKET, Key: originalKey}).promise()
+  var originalKey = event.queryStringParameters.key;
+  
+  if( typeof event.queryStringParameters.w !== 'undefined'){
+      var width = parseInt(event.queryStringParameters.w);
+  }
+  if( typeof event.queryStringParameters.h !== 'undefined'){
+      var height = parseInt(event.queryStringParameters.h);
+  }
+  
+if(typeof originalKey !== 'undefined' && originalKey !== "" && (!isNaN(height) || !isNaN(width))){
+        var key=originalKey;
+        if(!isNaN(height) && height){
+          key +=";h="+height;
+        }
+        
+        if(!isNaN(width) && width){
+            key +=";w="+width;
+        }
+        
+        S3.getObject({Bucket: BUCKET, Key: originalKey}).promise()
     .then(data => Sharp(data.Body)
       .resize(width, height)
       .toFormat('png')
@@ -36,4 +49,7 @@ exports.handler = function(event, context, callback) {
       })
     )
     .catch(err => callback(err))
+
+} 
+
 }
