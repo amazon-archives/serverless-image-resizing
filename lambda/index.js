@@ -179,6 +179,7 @@ exports.handler = (event, context, callback) => {
       Body: img.data,
       Bucket: DST_BUCKET,
       ContentType: img.mimeType,
+      CacheControl: "public, max-age=2592000",
       Key: dstKey,
     }).promise()
     )
