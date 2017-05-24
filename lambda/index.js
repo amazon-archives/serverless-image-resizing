@@ -10,6 +10,7 @@ const SRC_BUCKET = process.env.SRC_BUCKET;
 const DST_BUCKET = process.env.DST_BUCKET;
 const URL = process.env.URL;
 
+
 // JSON file generated from the "liip_imagine -> filter_sets" section of
 // neighbourly/app/config.yml file.
 //
@@ -31,6 +32,10 @@ var Resize = function (imgData, filterSet) {
 
   const filters = filterSet.filters;
   var imageFormat;
+  var jpegOptions = {};
+  var outputOptions = {};
+  var upscale = false;
+  var upscaleX, upscaleY;
   var img = Sharp(imgData)
 
   // The conversion from YAML to JSON loses ordering of filters
@@ -44,11 +49,16 @@ var Resize = function (imgData, filterSet) {
 
     var u = filters.upscale;
 
+    // Note: in Sharp, multiple resizsings can't be done as discrete
+    // operations without creating multiple buffers, so instead we flag here
+    // whether upscaling should be done as part of thumbnail creation later
     if (u.hasOwnProperty('min') &&
       Array.isArray(u.min) &&
       u.min.length == 2) {
+      upscale = true;
+      upscaleX = u.min[0];
+      upscaleY = u.min[1];
       console.log("Upscale to " + u.min[0] + " x " + u.min[1])
-      img = img.resize(u.min[0], u.min[1]).min()
     }
   }
 
@@ -61,17 +71,28 @@ var Resize = function (imgData, filterSet) {
   if (filters.hasOwnProperty('thumbnail')) {
 
     var f = filters.thumbnail;
+    var enlarge = false;
 
     if (f.hasOwnProperty('size') &&
       f.hasOwnProperty('mode') &&
       Array.isArray(f.size) &&
       f.size.length == 2) {
 
-      if (f.mode === "inset") {
-        img = img.resize(f.size[0], f.size[1]).withoutEnlargement().max();
-      } else { // mode == "outbound"
-        img = img.resize(f.size[0], f.size[1]).withoutEnlargement()
+      // decide if we actually need to upscale
+      if (upscale && (upscaleX >= f.size[0] || upscaleY >= f.size[1])) {
+        enlarge = true;
       }
+
+      img = img.resize(f.size[0], f.size[1])
+
+      if (!enlarge) {
+        img = img.withoutEnlargement();
+      }
+
+      if (f.mode === "inset") {
+        img = img.max();
+      }
+
       console.log("Thumbnail to " + f.size[0] + " x " + f.size[1] + " (" + f.mode + ")");
     }
   }
@@ -90,12 +111,22 @@ var Resize = function (imgData, filterSet) {
     }
   }
 
+  // jpegs may have optional quality setting
+  if (filterSet.hasOwnProperty('quality')) {
+    jpegOptions = { quality: filterSet.Quality };
+  }
+
 
   return img.metadata()
     .then(metadata => {
       console.log("Source image format: " + metadata.format);
       imageFormat = metadata.format;
-      return img.toFormat(metadata.format)
+
+      if (imageFormat === "jpeg") {
+        outputOptions = jpegOptions;
+      }
+
+      return img.toFormat(metadata.format, outputOptions)
         .toBuffer()
         .then(buffer => {
           return { data: buffer, mimeType: "image/" + metadata.format }
