@@ -135,7 +135,7 @@ var Resize = function (imgData, filterSet) {
 }
 
 
-exports.handler = (event, context, callback) => {
+var ResizeAndCopy = function (event, context, callback) {
 
   const path = event.queryStringParameters.key;
   var pieces = path.toString().split('/');
@@ -148,7 +148,7 @@ exports.handler = (event, context, callback) => {
     pieces[1] !== 'cache' ||
     !filterSet.hasOwnProperty(pieces[2])) {
     // Send generic 404 to client for clearly invalid paths
-    console.log("Invalid path format specified : " + path)
+    console.log("Invalid path format for image specified : " + path)
     callback(null, {
       statusCode: '404',
       body: "Not Found."
@@ -190,4 +190,63 @@ exports.handler = (event, context, callback) => {
     })
     )
     .catch(err => callback(err))
+}
+
+// - read the original file from the src S3 bucket with "images/" prefix stripped,
+// - store it in the destination S3 bucket with the
+// - redirect the client to look for the file at original request URL
+var Copy = function (event, context, callback) {
+  const path = event.queryStringParameters.key;
+  var pieces = path.toString().split('/');
+
+  // Valid paths will look something like
+  // images/_collection_/_filename_._filetype_?_optional_cachebuster_
+
+  if (pieces.length < 3 || pieces[0] !== 'images') {
+    // Send generic 404 to client for clearly invalid paths
+    console.log("Invalid path format for file specified : " + path)
+    callback(null, {
+      statusCode: '404',
+      body: "Not Found."
+    });
+    return;
+  }
+
+  // extract bucket key for original URL, stripping any query params from URL
+  const srcKey = pieces.slice(1).join('/').split('?')[0];
+
+  // Destinaton key is the provided URL (minus query params)
+  // this ensures further requests for the same URL will be
+  // served directly by the bucket public web interface.
+  const dstKey = path.split('?')[0];
+
+  //console.log("srcKey: " + srcKey)
+  //console.log("dstKey: " + dstKey)
+
+  S3.getObject({ Bucket: SRC_BUCKET, Key: srcKey }).promise()
+    .then(data => S3.putObject({
+      Body: data.Body,
+      Bucket: DST_BUCKET,
+      ContentType: data.ContentType,
+      Key: dstKey
+    }).promise()
+    )
+    .then(() => callback(null, {
+      statusCode: '301',
+      headers: { 'location': `${URL}/${dstKey}` },
+      body: '',
+    })
+    )
+    .catch(err => callback(err))
+}
+
+exports.handler = (event, context, callback) => {
+
+  // If it's for an image that needs resizing...
+  if (event.queryStringParameters.key.substr(0, 14) === 'images/cache/') {
+    return ResizeAndCopy(event, context, callback)
+  } else {
+    // It's just something that used to be served up via direct_file_link
+    return Copy(event, context, callback)
+  }
 };
