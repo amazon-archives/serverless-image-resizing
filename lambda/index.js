@@ -31,7 +31,7 @@ exports.handler = function(event, context, callback) {
     )
     .then(() => callback(null, {
         statusCode: '301',
-        headers: {'location': `${URL}/${key}`},
+        headers: {'location': `${URL}${key}`},
         body: '',
       })
     )
