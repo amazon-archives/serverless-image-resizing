@@ -58,7 +58,7 @@ var Resize = function (imgData, filterSet) {
       upscale = true;
       upscaleX = u.min[0];
       upscaleY = u.min[1];
-      console.log("Upscale to " + u.min[0] + " x " + u.min[1])
+      // console.log("Upscale to " + u.min[0] + " x " + u.min[1])
     }
   }
 
@@ -93,7 +93,7 @@ var Resize = function (imgData, filterSet) {
         img = img.max();
       }
 
-      console.log("Thumbnail to " + f.size[0] + " x " + f.size[1] + " (" + f.mode + ")");
+      // console.log("Thumbnail to " + f.size[0] + " x " + f.size[1] + " (" + f.mode + ")");
     }
   }
 
@@ -107,7 +107,7 @@ var Resize = function (imgData, filterSet) {
 
     if (r.hasOwnProperty('widen')) {
       img = img.resize(r.widen, null).withoutEnlargement();
-      console.log("Widening to " + r.widen);
+      // console.log("Widening to " + r.widen);
     }
   }
 
@@ -119,7 +119,7 @@ var Resize = function (imgData, filterSet) {
 
   return img.metadata()
     .then(metadata => {
-      console.log("Source image format: " + metadata.format);
+      // console.log("Source image format: " + metadata.format);
       imageFormat = metadata.format;
 
       if (imageFormat === "jpeg") {
@@ -164,10 +164,10 @@ var ResizeAndCopy = function (event, context, callback) {
   // served directly by the bucket public web interface.
   const dstKey = path.split('?')[0];
 
+  console.log('Resizing. arn:aws:s3:::%s/%s ==> arn:aws:s3:::%s/%s', SRC_BUCKET, srcKey, DST_BUCKET, dstKey);
+
   // Filter(s) to apply
   const selectedFilterSet = filterSet[pieces[2]];
-
-
 
   // - read the original image from the src S3 bucket,
   // - resize it according to the specified filter parameters
@@ -220,8 +220,7 @@ var Copy = function (event, context, callback) {
   // served directly by the bucket public web interface.
   const dstKey = path.split('?')[0];
 
-  //console.log("srcKey: " + srcKey)
-  //console.log("dstKey: " + dstKey)
+  console.log('Copying. arn:aws:s3:::%s/%s ==> arn:aws:s3:::%s/%s', SRC_BUCKET, srcKey, DST_BUCKET, dstKey);
 
   S3.getObject({ Bucket: SRC_BUCKET, Key: srcKey }).promise()
     .then(data => S3.putObject({
@@ -241,6 +240,9 @@ var Copy = function (event, context, callback) {
 }
 
 exports.handler = (event, context, callback) => {
+
+  // console.log("event.queryStringParameters.key : " + event.queryStringParameters.key)
+  // console.log("event.queryStringParameters.key.substr(0, 13) : " + event.queryStringParameters.key.substr(0, 13) )
 
   // If it's for an image that needs resizing...
   if (event.queryStringParameters.key.substr(0, 13) === 'images/cache/') {
