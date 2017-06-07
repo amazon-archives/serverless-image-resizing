@@ -156,8 +156,16 @@ var ResizeAndCopy = function (event, context, callback) {
     return;
   }
 
+  // Some older paths in the wild will have an extra "images" component e.g.
+  // images/cache/_filter_type_/images/_collection_/_filename_._filetype_?_optional_cachebuster_
+  // Need to cater for those and strip the second "image" from source path
+  var startPiece = 3;
+  if (pieces[2] !== 'images') {
+    startPiece = 4;
+  }
+
   // extract bucket key for original image, stripping any query params from URL
-  const srcKey = pieces.slice(3).join('/').split('?')[0];
+  const srcKey = pieces.slice(startPiece).join('/').split('?')[0];
 
   // Destinaton key is the provided URL (minus query params)
   // this ensures further requests for the same URL will be
