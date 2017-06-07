@@ -13,7 +13,7 @@ A good explanation of how this process works can be found in this blog post:
 
 This fork is specifically for managing the neighbourly user-uploaded images and static files served via Gaufrette and the LiipImagineBundle, and provide a seamless drop-in replacement for the image resizing functionality. The aim is to bypass the PHP stack and let Cloudfront serve these files directly from an S3 bucket.
 
-###The main differences between this fork and the original one are:
+### The main differences between this fork and the original one are:
 
 - This reads the source images from one bucket, and writes the (scaled) images to a separate one (hence the required `SRC_BUCKET` and `DST_BUCKET` environment variables, as well as `URL`)
 
