@@ -27,17 +27,22 @@ This fork is specifically for managing the neighbourly user-uploaded images and 
 
 ## Usage
 
-1. Build the Lambda function
+1. **Build the Lambda function**
 
    The Lambda function uses [sharp](https://github.com/lovell/sharp) for image resizing which requires native extensions. In order to run on Lambda, it must be packaged on Amazon Linux. You're going to need Docker installed.
 
 	Use the Amazon Linux Docker container image to build the package using your local system. This repo includes a Makefile that will download Amazon Linux, install Node.js and developer tools, and build the extensions using Docker. Run `make all`.
 
-2. Upload the resulting `dist/function.zip` file to the `resize` [lambda defined here](https://ap-southeast-2.console.aws.amazon.com/lambda/home?region=ap-southeast-2#/functions/resize?tab=code) and test it. (There is a test event configured simliar to the Cloufdfront upstream requests it will receive)
 
+2. **Deploy the lambda function.**
+
+	You'll need the [AWS cli tools](https://aws.amazon.com/cli/) installed, and valid AWS credentials configured to be able to do this.
+	
+	run `bin/deploy` to upload the newly built lambda.
+	
+	This will upload the `dist/function.zip` file (built in step 1) to the `resize` [lambda defined here](https://ap-southeast-2.console.aws.amazon.com/lambda/home?region=ap-southeast-2#/functions/resize?tab=code) and then run a test using a sample event similar to an upstream request from Cloudfront. **CHECK THE OUTPUT!**
 
 ## Notes
-Don't use the Cloudformation stuff included here; it's a leftover from the original repo this was forked from, and not appropriate for our use case.
 
 The required Neighbourly infrastructure components have been manually built currently. These include:
 

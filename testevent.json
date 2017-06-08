@@ -1,0 +1,57 @@
+{
+  "body": null,
+  "headers": {
+    "Accept": "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+    "Accept-Encoding": "gzip, deflate, sdch, br",
+    "Accept-Language": "en-GB,en-US;q=0.8,en;q=0.6",
+    "CloudFront-Forwarded-Proto": "https",
+    "CloudFront-Is-Desktop-Viewer": "true",
+    "CloudFront-Is-Mobile-Viewer": "false",
+    "CloudFront-Is-SmartTV-Viewer": "false",
+    "CloudFront-Is-Tablet-Viewer": "false",
+    "CloudFront-Viewer-Country": "NZ",
+    "Host": "zyhjrrhx3l.execute-api.ap-southeast-2.amazonaws.com",
+    "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
+    "Via": "2.0 a16b87d8a44348583221cbce35ac90fc.cloudfront.net (CloudFront)",
+    "X-Amz-Cf-Id": "-77I6NZ8oWRSy65eTjJLLZ71lMnk-0gbFlyV0PJz5XcK7XYHDTZqNA==",
+    "X-Amzn-Trace-Id": "Root=1-591ba2ef-28204aca65c7f8ce6918da58",
+    "X-Forwarded-For": "43.245.241.95, 54.240.152.75",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https",
+    "dnt": "1",
+    "upgrade-insecure-requests": "1"
+  },
+  "httpMethod": "GET",
+  "isBase64Encoded": false,
+  "path": "/resize",
+  "pathParameters": null,
+  "queryStringParameters": {
+    "key": "images/cache/200_low_quality/images/publication-pdfs/5909382d686244.08632278.jpeg"
+  },
+  "requestContext": {
+    "accountId": "016143815607",
+    "apiId": "zyhjrrhx3l",
+    "httpMethod": "GET",
+    "identity": {
+      "accessKey": null,
+      "accountId": null,
+      "apiKey": "",
+      "caller": null,
+      "cognitoAuthenticationProvider": null,
+      "cognitoAuthenticationType": null,
+      "cognitoIdentityId": null,
+      "cognitoIdentityPoolId": null,
+      "sourceIp": "43.245.241.95",
+      "user": null,
+      "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_4) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/58.0.3029.110 Safari/537.36",
+      "userArn": null
+    },
+    "path": "/prod/resize",
+    "requestId": "90dc42f1-3a9d-11e7-8211-cb456d583964",
+    "resourceId": "ln2ilp",
+    "resourcePath": "/resize",
+    "stage": "prod"
+  },
+  "resource": "/resize",
+  "stageVariables": null
+}

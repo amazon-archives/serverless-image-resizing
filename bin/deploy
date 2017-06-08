@@ -2,32 +2,66 @@
 
 set -o errexit
 
-stack_name=ServerlessImageResize
-region="$(aws configure get region)"
-bucket_name="temp-serverless-resize-$(openssl rand -hex 8)"
-account_id="$(aws sts get-caller-identity --query Account --output text \
-  | xargs echo -n)"
+function usage() {
+  cat <<EOT
 
-set -o xtrace
+Usage: $0 [AWS profile name]
 
-sed -e "s/REGION/${region}/g" -e "s/ACCOUNT_ID/${account_id}/g" \
-  api-template.yaml > deploy/api.yaml
+This script will build the AWS environment stack and deploy the lambda.
 
-aws s3 mb "s3://${bucket_name}"
+It is strongly recommended that if you have access to different
+AWS accounts that you configure them as different named profiles, as
+outlined here: http://docs.aws.amazon.com/cli/latest/userguide/cli-multiple-profiles.html
 
-aws cloudformation package \
-  --output-template-file=deploy/output.yaml \
-  --template-file=image-resize.yaml \
-  --s3-bucket="${bucket_name}" \
+If you have only one account configured, use 'default' as the argument.
 
-aws cloudformation deploy \
-  --template-file=deploy/output.yaml \
-  --stack-name="${stack_name}" \
-  --capabilities=CAPABILITY_NAMED_IAM
+EOT
 
-aws s3 rb --force "s3://${bucket_name}"
+	exit 1
+}
 
-aws cloudformation describe-stacks \
-  --stack-name "${stack_name}" \
-  --query Stacks[].Outputs \
-  --output table
+# check for profile argument
+aws_profile=$1
+if [ "$aws_profile" == "" ]; then
+  usage
+fi
+
+region="$(aws --profile=${aws_profile} configure get region)"
+account_id="$(aws --profile=${aws_profile} sts get-caller-identity --query Account --output text | xargs echo -n)"
+lambda="resize"
+
+
+cat <<EOT
+
+AWS Profile           : ${aws_profile}
+Account ID            : ${account_id}
+Region                : ${region}
+Lamda function name   : ${lambda}
+
+EOT
+
+echo -e "\n\nUploading 'dist/function.zip'' to the '${lambda}'' lambda...\n"
+
+# Upload the Lambda
+aws lambda update-function-code  \
+  --profile=${aws_profile} \
+  --function-name=${lambda} \
+  --zip-file=fileb://dist/function.zip \
+  --publish
+
+echo -e "\n\nTesting the lambda with a sample event...\n"
+
+# Test the Lambda with a sample event
+aws lambda invoke \
+  --invocation-type=RequestResponse \
+  --function-name=${lambda} \
+  --region=${region} \
+  --payload=file://testevent.json \
+  --profile=${aws_profile} \
+  deploy/response.txt
+
+# Display the result
+
+echo -e "\n\nLambda result:\n"
+
+cat deploy/response.txt
