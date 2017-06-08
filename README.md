@@ -4,11 +4,9 @@
 
 ## Description
 
-This is a fork of the sample serverless-image-resizing repo:
-[https://github.com/awslabs/serverless-image-resizing]()
+This is a fork of the [sample serverless-image-resizing repo from AWS](https://github.com/awslabs/serverless-image-resizing)
 
-A good explanation of how this process works can be found in this blog post:
-[https://aws.amazon.com/blogs/compute/resize-images-on-the-fly-with-amazon-s3-aws-lambda-and-amazon-api-gateway/]()
+A good explanation of how this whole process works can be found [in this blog post](https://aws.amazon.com/blogs/compute/resize-images-on-the-fly-with-amazon-s3-aws-lambda-and-amazon-api-gateway/)
 
 
 This fork is specifically for managing the neighbourly user-uploaded images and static files served via Gaufrette and the LiipImagineBundle, and provide a seamless drop-in replacement for the image resizing functionality. The aim is to bypass the PHP stack and let Cloudfront serve these files directly from an S3 bucket.
