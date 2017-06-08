@@ -29,9 +29,9 @@ This fork is specifically for managing the neighbourly user-uploaded images and 
 
 1. Build the Lambda function
 
-   The Lambda function uses [sharp][sharp] for image resizing which requires native extensions. In order to run on Lambda, it must be packaged on Amazon Linux. You're going to need Docker installed.
+   The Lambda function uses [sharp](https://github.com/lovell/sharp) for image resizing which requires native extensions. In order to run on Lambda, it must be packaged on Amazon Linux. You're going to need Docker installed.
 
-	Use the Amazon Linux Docker container image to build the package using your local system. This repo includes Makefile that will download Amazon Linux, install Node.js and developer tools, and build the extensions using Docker. Run `make all`.
+	Use the Amazon Linux Docker container image to build the package using your local system. This repo includes a Makefile that will download Amazon Linux, install Node.js and developer tools, and build the extensions using Docker. Run `make all`.
 
 2. Upload the resulting `dist/function.zip` file to the `resize` [lambda defined here](https://ap-southeast-2.console.aws.amazon.com/lambda/home?region=ap-southeast-2#/functions/resize?tab=code) and test it. (There is a test event configured simliar to the Cloufdfront upstream requests it will receive)
 
