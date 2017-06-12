@@ -10,7 +10,7 @@ RUN yum -y install gcc-c++ && \
     rpm --checksig ns.rpm && \
     rpm --install --force ns.rpm && \
     npm install -g npm@latest && \
-    npm cache clean && \
+    npm cache clean --force && \
     yum clean all && \
     rm --force ns.rpm
 
