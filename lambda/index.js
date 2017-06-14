@@ -160,7 +160,7 @@ var ResizeAndCopy = function (event, context, callback) {
   // images/cache/_filter_type_/images/_collection_/_filename_._filetype_?_optional_cachebuster_
   // Need to cater for those and strip the second "image" from source path
   var startPiece = 3;
-  if (pieces[2] !== 'images') {
+  if (pieces[3] === 'images') {
     startPiece = 4;
   }
 
