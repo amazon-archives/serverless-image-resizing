@@ -134,6 +134,50 @@ var Resize = function (imgData, filterSet) {
     })
 }
 
+//
+// Some source files have either a default or explicitly incorrect
+// Mime Type associated with them, which because a problem when serving the files
+// directly from the S3 bucket via Cloudfront.
+//
+// Notable example is all the images in event_images/ have a MimeType of 'application/octet-stream'
+// (perhaps due to some bug while upoading?)
+//
+// This is only an issue with images that are not scaled (and other files), as we
+// determine the MimeType programatically for images that are opened and manipulated
+// via the sharp library.
+
+var getCorrectMimeType = function (filename, mimeType) {
+  // Only concerned with "application/octet-stream" and
+  // "binary/octet-stream" for now
+  if (mimeType.substr(mimeType.length - 12) !== "octet-stream") {
+    return mimeType;
+  }
+
+  var newMimeType = mimeType
+  var ext = filename.split('.').pop().toLowerCase();
+  switch (ext) {
+    case 'jpg':
+    case 'jpeg':
+      newMimeType = 'image/jpeg';
+      break;
+
+    case 'png':
+      newMimeType = 'image/png';
+      break;
+
+    case 'pdf':
+      newMimeType = 'application/pdf';
+      break;
+  }
+
+  if (mimeType !== newMimeType) {
+    console.log("Invalid Mime Type '%s' found for '%s'. Corrected it to '%s'.", mimeType, filename, newMimeType)
+  } else {
+    console.log("Invalid Mime Type '%s' found for '%s'. However, didn't fix it as we don't have a rule for '%s' file extensions." , mimeType, filename, ext)
+  }
+
+  return newMimeType;
+}
 
 var ResizeAndCopy = function (event, context, callback) {
 
@@ -234,7 +278,7 @@ var Copy = function (event, context, callback) {
     .then(data => S3.putObject({
       Body: data.Body,
       Bucket: DST_BUCKET,
-      ContentType: data.ContentType,
+      ContentType: getCorrectMimeType(dstKey, data.ContentType),
       Key: dstKey
     }).promise()
     )
