@@ -119,17 +119,25 @@ var Resize = function (imgData, filterSet) {
 
   return img.metadata()
     .then(metadata => {
-      // console.log("Source image format: " + metadata.format);
-      imageFormat = metadata.format;
+      if(metadata.format == 'gif') {
+        // GIF is not a Sharp supported output format, so
+        // we have to kinda cheat. Set the output format and the mimeType
+        // to PNG, but keep the actual filename with the GIF extension
+        imageFormat = 'png';
+        console.log("GIF not supported - outputting as PNG (but keeping original filename)");
+      } else {
+        imageFormat = metadata.format;
+      }
 
+      // JPEGs have additional settings for quality
       if (imageFormat === "jpeg") {
         outputOptions = jpegOptions;
       }
 
-      return img.toFormat(metadata.format, outputOptions)
+      return img.toFormat(imageFormat, outputOptions)
         .toBuffer()
         .then(buffer => {
-          return { data: buffer, mimeType: "image/" + metadata.format }
+          return { data: buffer, mimeType: "image/" + imageFormat }
         })
     })
 }
@@ -163,6 +171,10 @@ var getCorrectMimeType = function (filename, mimeType) {
 
     case 'png':
       newMimeType = 'image/png';
+      break;
+
+    case 'gif':
+      newMimeType = 'image/gif';
       break;
 
     case 'pdf':
