@@ -11,9 +11,18 @@ const URL = process.env.URL;
 
 exports.handler = function(event, context, callback) {
   const key = event.queryStringParameters.key;
-  const match = key.match(/(\d+)x?(\d+)?\/(.+\.(png|PNG|jpg|JPG|jpeg|JPEG|tif|TIF|tiff|TIFF|webp|WEBP))$/);
+  if(key === undefined){
+    return callback(null, {
+        statusCode: '400',
+        body: 'Key does not exists.'
+      })
+  }
+  const match = key.match(/(\d+)x?(\d+)?\/(.+\.(png|PNG|jpg|JPG|jpeg|JPEG|tif|TIF|tiff|TIFF|webp|WEBP))/);
   if(match === null){
-    return callback(new Error("Key does not match form: Nx?N?/name.[jpg|png|tiff|webp]. Not supported image format."))
+    return callback(null, {
+        statusCode: '400',
+        body: 'Key does not match form: Nx?N?/name.[jpg|png|tiff|webp]. Not supported image format.'
+      })
   }
   let height = 0;
   const width = parseInt(match[1], 10);
@@ -25,7 +34,10 @@ exports.handler = function(event, context, callback) {
   const maxPixelCount = 2500;
   const minPixelCount = 0;
   if(width <= minPixelCount || width > maxPixelCount || height <= minPixelCount || height > maxPixelCount) {
-    return callback(new Error(`Image requested is not in range ${minPixelCount+=1}-${maxPixelCount} pixels.`))
+    return callback(null, {
+        statusCode: '400',
+        body: 'Image requested is not in range ${minPixelCount+=1}-${maxPixelCount} pixels.'
+      })
   }
   const originalKey = match[3];
 
@@ -33,15 +45,14 @@ exports.handler = function(event, context, callback) {
     .then(data => Sharp(data.Body)
       .resize(width, height)
       .max()
-      .toFormat('jpg')
+      .toFormat('jpeg')
       .toBuffer()
     )
     .then(buffer => S3.putObject({
         Body: buffer,
         Bucket: BUCKET,
-        ContentType: 'image/jpg',
+        ContentType: 'image/jpeg',
         Key: key,
-        Tagging: 'resized=true'
       }).promise()
     )
     .then(() => callback(null, {

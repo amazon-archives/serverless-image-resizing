@@ -12,5 +12,5 @@ dist: package
 	cd lambda && zip -FS -q -r ../dist/function.zip *
 
 clean:
-	rm -r lambda/node_modules
+	sudo rm -r lambda/node_modules
 	docker rmi --force amazonlinux:nodejs
