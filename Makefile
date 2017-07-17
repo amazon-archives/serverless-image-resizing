@@ -1,6 +1,6 @@
 .PHONY: all image package dist clean
 
-all: package
+all: dist
 
 image:
 	docker build --tag amazonlinux:nodejs .
