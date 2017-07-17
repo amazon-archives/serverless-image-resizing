@@ -38,7 +38,7 @@ example:
 	- http://[BucketWebsiteHost]/90x90/image.png
 	- http://[BucketWebsiteHost]/40x40/image.png
 	
-Added tagging: "resized=true" to be able to create delete timeout on resized images. 
+Added tagging: **"resized=true"** to be able to create delete timeout on resized images. 
 	
 
 	You can find the BucketWebsiteUrl in the table of outputs displayed on a successful invocation of the deploy script.
