@@ -24,9 +24,17 @@ Resizes images on the fly using Amazon S3, AWS Lambda, and Amazon API Gateway. U
 
 	Upload an image to the S3 bucket and try to resize it via your web browser to different sizes, e.g. with an image uploaded in the bucket called image.png:
 
+[BucketWebsiteHost] => {bucket}.s3website-{region}-amazon.com
+example: mybucket.s3website-eu-west1-amazon.com/image.png -> original. 
+      -> mybucket.s3website-eu-west1-amazon.com/300/image.png -> resized
+      -> mybucket.s3website-eu-west1-amazon.com/300x300/image.png -> resized same as above
+
 	- http://[BucketWebsiteHost]/300x300/image.png
 	- http://[BucketWebsiteHost]/90x90/image.png
 	- http://[BucketWebsiteHost]/40x40/image.png
+	
+Added tagging: "resized=true" to be able to create delete timeout on resized images. 
+	
 
 	You can find the BucketWebsiteUrl in the table of outputs displayed on a successful invocation of the deploy script.
 
