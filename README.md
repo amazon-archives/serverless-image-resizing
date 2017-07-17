@@ -1,5 +1,12 @@
 # Serverless Image Resizing
 
+## Short tutorial:
+
+Run `make all`
+Run `bin/deploy`
+copy url and paste it to browser.
+
+
 ## Description
 
 Resizes images on the fly using Amazon S3, AWS Lambda, and Amazon API Gateway. Using a conventional URL structure and S3 static website hosting with redirection rules, requests for resized images are redirected to a Lambda function via API Gateway which will resize the image, upload it to S3, and redirect the requestor to the resized image. The next request for the resized image will be served from S3 directly.
