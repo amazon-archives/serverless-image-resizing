@@ -4,7 +4,7 @@
 
 - Run `make all`
 - Run `bin/deploy`
-- copy url and paste it to browser.
+- Copy url and paste it to browser.
 
 
 ## Description
