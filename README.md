@@ -12,7 +12,7 @@ Resizes images on the fly using Amazon S3, AWS Lambda, and Amazon API Gateway. U
 
    - Upload the contents of the `lambda` subdirectory to a [Amazon EC2 instance running Amazon Linux][amazon-linux] and run `npm install`, or
 
-   - Use the Amazon Linux Docker container image to build the package using your local system. This repo includes Makefile that will download Amazon Linux, install Node.js and developer tools, and build the extensions using Docker. Run `make all`.
+   - Use the Amazon Linux Docker container image to build the package using your local system. This repo includes Makefile that will download Amazon Linux, install Node.js and developer tools, and build the extensions using Docker. Run `make all`. if you want to clean afterwards run `make clean`. You can also call each command separatly from `makefile`.
 
 1. Deploy the CloudFormation stack
 
@@ -41,7 +41,8 @@ example:
 Added tagging: **"resized=true"** to be able to create delete timeout on resized images. 
 	
 
-	You can find the BucketWebsiteUrl in the table of outputs displayed on a successful invocation of the deploy script.
+	You can find the BucketWebsiteUrl in the table of outputs 
+	displayed on a successful invocation of the deploy script.
 
 **Note:** If you create the Lambda function yourself, make sure to select Node.js version 6.10.
 
