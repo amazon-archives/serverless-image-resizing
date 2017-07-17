@@ -14,14 +14,14 @@ exports.handler = function(event, context, callback) {
   if(key === undefined){
     return callback(null, {
         statusCode: '400',
-        body: 'Key does not exists.'
+        body: {msg: 'Key does not exists.'}
       })
   }
   const match = key.match(/(\d+)x?(\d+)?\/(.+\.(png|PNG|jpg|JPG|jpeg|JPEG|tif|TIF|tiff|TIFF|webp|WEBP))/);
   if(match === null){
     return callback(null, {
         statusCode: '400',
-        body: 'Key does not match form: Nx?N?/name.[jpg|png|tiff|webp]. Not supported image format.'
+        body: {msg: 'Key does not match form: Nx?N?/name.[jpg|png|tiff|webp]. Not supported image format.'}
       })
   }
   let height = 0;
@@ -36,7 +36,7 @@ exports.handler = function(event, context, callback) {
   if(width <= minPixelCount || width > maxPixelCount || height <= minPixelCount || height > maxPixelCount) {
     return callback(null, {
         statusCode: '400',
-        body: 'Image requested is not in range ${minPixelCount+=1}-${maxPixelCount} pixels.'
+        body: {msg: 'Image requested is not in range ${minPixelCount+=1}-${maxPixelCount} pixels.'}
       })
   }
   const originalKey = match[3];
@@ -53,6 +53,7 @@ exports.handler = function(event, context, callback) {
         Bucket: BUCKET,
         ContentType: 'image/jpeg',
         Key: key,
+        Tagging: "resized=true"
       }).promise()
     )
     .then(() => callback(null, {

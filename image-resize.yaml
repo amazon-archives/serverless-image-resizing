@@ -33,8 +33,8 @@ Resources:
       CodeUri: ./dist/function.zip
       Handler: index.handler
       Runtime: nodejs6.10
-      MemorySize: 1536
-      Timeout: 60
+      MemorySize: 256
+      Timeout: 10
       Environment:
         Variables:
           BUCKET: !Ref ImageBucket
@@ -45,6 +45,7 @@ Resources:
               Effect: Allow
               Action:
                 - s3:PutObject
+                - s3:PutObjectTagging
 
   ResizeFunctionPermission:
     Type: AWS::Lambda::Permission
