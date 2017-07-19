@@ -15,7 +15,7 @@ Resources:
     Type: AWS::S3::Bucket
     DeletionPolicy: Retain
     Properties:
-      BucketName: your-bucket-example-resizing.com
+      BucketName: your-bucket-name-serverless-example
       AccessControl: PublicRead
       WebsiteConfiguration:
         IndexDocument: index.html
@@ -34,8 +34,8 @@ Resources:
       CodeUri: ./dist/function.zip
       Handler: index.handler
       Runtime: nodejs6.10
-      MemorySize: 256
-      Timeout: 10
+      MemorySize: 128
+      Timeout: 15
       Environment:
         Variables:
           BUCKET: !Ref ImageBucket
