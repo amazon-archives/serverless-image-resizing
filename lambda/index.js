@@ -73,6 +73,10 @@ exports.handler = function(event, context, callback) {
             })
           }
 
+          if(match[2] === undefined) {
+              height = null;
+          }
+
           S3.getObject({Bucket: BUCKET, Key: originalKey}).promise()
           .then(data => Sharp(data.Body)
           .resize(width, height)
