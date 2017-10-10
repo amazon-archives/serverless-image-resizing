@@ -10,7 +10,7 @@ const BUCKET = process.env.BUCKET;
 const URL = process.env.URL;
 
 exports.handler = function(event, context, callback) {
-  const key = event.queryStringParameters.key;
+  const key = decodeURIComponent(event.queryStringParameters.key);
   const match = key.match(/(\d+)x(\d+)\/(.*)/);
   const width = parseInt(match[1], 10);
   const height = parseInt(match[2], 10);
