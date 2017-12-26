@@ -2,9 +2,16 @@
 
 set -o errexit
 
+echo -n "Enter bucket_name (default: temp-serverless-resize-$(openssl rand -hex 8)):"
+read bucket_name
+
+if [ -z "$bucket_name" ]
+then
+  bucket_name="temp-serverless-resize-$(openssl rand -hex 8)"
+fi
+
 stack_name=ServerlessImageResize
 region="$(aws configure get region)"
-bucket_name="temp-serverless-resize-$(openssl rand -hex 8)"
 account_id="$(aws sts get-caller-identity --query Account --output text \
   | xargs echo -n)"
 
