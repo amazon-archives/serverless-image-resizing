@@ -7,7 +7,7 @@
   "license": "Apache-2.0",
   "main": "index.js",
   "dependencies": {
-    "sharp": "^0.18.4",
+    "sharp": "^0.17.3",
     "aws-sdk": "^2.179.0",
     "aws-xray-sdk-core": "^1.1.6"
   },

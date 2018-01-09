@@ -90,7 +90,7 @@ var Resize = function (imgData, filterSet) {
         enlarge = true;
       }
 
-      img = img.resize(f.size[0], f.size[1])
+      img = img.resize(f.size[0], f.size[1]);
 
       if (!enlarge) {
         img = img.withoutEnlargement();
@@ -198,10 +198,10 @@ var getCorrectMimeType = function (filename, mimeType) {
   return newMimeType;
 }
 
-var ResizeAndCopy = function (event, context, callback) {
+const ResizeAndCopy = function (event, context, callback) {
 
   const path = event.queryStringParameters.key;
-  var pieces = path.toString().split('/');
+  const pieces = path.toString().split('/');
 
   // Valid paths will look something like
   // images/cache/_filter_type_/_collection_/_filename_._filetype_?_optional_cachebuster_
@@ -222,7 +222,7 @@ var ResizeAndCopy = function (event, context, callback) {
   // Some older paths in the wild will have an extra "images" component e.g.
   // images/cache/_filter_type_/images/_collection_/_filename_._filetype_?_optional_cachebuster_
   // Need to cater for those and strip the second "image" from source path
-  var startPiece = 3;
+  let startPiece = 3;
   if (pieces[3] === 'images') {
     startPiece = 4;
   }
@@ -289,11 +289,15 @@ var ResizeAndCopy = function (event, context, callback) {
             if (err) {
               logger.log('error', 'Tried to save to src bucket', err);
             } else {
+                logger.log('info', 'Stored image in src bucket');
+
                 storeResizedImage(data.Body, selectedFilterSet);
             }
           });
         });
       } else {
+        logger.log('info', 'Found image in src bucket');
+
         storeResizedImage(data.Body, selectedFilterSet);
       }
   });
