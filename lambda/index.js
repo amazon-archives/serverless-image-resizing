@@ -4,8 +4,9 @@ const AWSXRay = require('aws-xray-sdk-core');
 const AWS = AWSXRay.captureAWS(require('aws-sdk'));
 const S3 = new AWS.S3();
 const Sharp = require('sharp');
-const winston = require('winston');
-AWSXRay.setLogger(winston);
+const logger = require('winston');
+
+AWSXRay.setLogger(logger);
 
 // These need to be defined in AWS with the Lambda
 const SRC_BUCKET = process.env.SRC_BUCKET;
@@ -13,7 +14,10 @@ const ORIG_SRC_BUCKET = process.env.ORIG_SRC_BUCKET;
 const DST_BUCKET = process.env.DST_BUCKET;
 const URL = process.env.URL;
 
-winston.info('Starting up for redirect URL ' + URL);
+logger.log('info', 'Redirect URL', URL);
+logger.log('info', 'SRC_BUCKET', SRC_BUCKET);
+logger.log('info', 'ORIG_SRC_BUCKET', ORIG_SRC_BUCKET);
+logger.log('info', 'DST_BUCKET', DST_BUCKET);
 
 // JSON file generated from the "liip_imagine -> filter_sets" section of
 // neighbourly/app/config.yml file.
@@ -245,13 +249,30 @@ var ResizeAndCopy = function (event, context, callback) {
       var bucketData;
 
       if (err) {
-        winston.log(info, "Error %s: %j", err, err.stack);
+        logger.log('warn', "%s --- %j", err, err.stack);
+
         // we assume here that the object doesn't exist and we try to get it from the original bucket (production)
-        S3.getObject({ Bucket: ORIG_SRC_BUCKET, Key: srcKey }).promise().then(data => S3.putObject({
-            Body: data.Body,
-            Bucket: SRC_BUCKET,
-            Key: srcKey
-        }));
+        S3.getObject({ Bucket: ORIG_SRC_BUCKET, Key: srcKey }, function(err, data) {
+          if (err) {
+            logger.log('error', 'Tried to get from orig bucket', err);
+
+            return false;
+          }
+
+          logger.log('info', 'successfully retrieved data %j', data);
+
+          S3.putObject({
+              Body: data.Body,
+              Bucket: SRC_BUCKET,
+              Key: srcKey
+          }, function(err, data) {
+            if (err) {
+              logger.log('error', 'Tried to save to src bucket', err);
+
+              return false;
+            }
+          });
+        });
 
         S3.getObject({ Bucket: SRC_BUCKET, Key: srcKey }, function(err, data) {
           if (err) {
