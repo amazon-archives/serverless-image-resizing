@@ -43,7 +43,7 @@ var Resize = function (imgData, filterSet) {
   var outputOptions = {};
   var upscale = false;
   var upscaleX, upscaleY;
-  var img = Sharp(imgData)
+  var img = Sharp(imgData);
 
   // The conversion from YAML to JSON loses ordering of filters
   // so we'll make some assumptions about sequence.
@@ -244,10 +244,30 @@ var ResizeAndCopy = function (event, context, callback) {
   // - resize it according to the specified filter parameters
   // - store it in the destination S3 bucket
   // - redirect the client to look for the newly created image.
+  const storeResizedImage = function(data, filterSet) {
+    logger.log('info', 'Selected filter set', filterSet);
+
+    const img = Resize(data, filterSet);
+
+    logger.log('info', 'Storing resized image', DST_BUCKET, dstKey);
+
+    S3.putObject({
+      Body: img.data,
+      Bucket: DST_BUCKET,
+      ContentType: img.mimeType,
+      CacheControl: "public, max-age=2592000",
+      Key: dstKey,
+    }).promise()
+    .then(() => callback(null, {
+      statusCode: '301',
+      headers: { 'location': `${URL}/${dstKey}` },
+      body: '',
+    })
+    )
+    .catch(err => callback(err));
+  };
 
   S3.getObject({ Bucket: SRC_BUCKET, Key: srcKey }, function(err, data) {
-      var bucketData;
-
       if (err) {
         logger.log('warn', "%s --- %j", err, err.stack);
 
@@ -256,10 +276,10 @@ var ResizeAndCopy = function (event, context, callback) {
           if (err) {
             logger.log('error', 'Tried to get from orig bucket', err);
 
-            return false;
+            callback(err);
           }
 
-          logger.log('info', 'successfully retrieved data %j', data);
+          logger.log('info', 'successfully retrieved data from orig bucket');
 
           S3.putObject({
               Body: data.Body,
@@ -268,39 +288,14 @@ var ResizeAndCopy = function (event, context, callback) {
           }, function(err, data) {
             if (err) {
               logger.log('error', 'Tried to save to src bucket', err);
-
-              return false;
+            } else {
+                storeResizedImage(data.Body, selectedFilterSet);
             }
           });
         });
-
-        S3.getObject({ Bucket: SRC_BUCKET, Key: srcKey }, function(err, data) {
-          if (err) {
-            callback(err);
-          }
-
-          bucketData = data;
-        });
       } else {
-        bucketData = data;
+        storeResizedImage(data.Body, selectedFilterSet);
       }
-
-      var img = Resize(bucketData.Body, selectedFilterSet);
-
-      S3.putObject({
-        Body: img.data,
-        Bucket: DST_BUCKET,
-        ContentType: img.mimeType,
-        CacheControl: "public, max-age=2592000",
-        Key: dstKey,
-      }).promise()
-      .then(() => callback(null, {
-        statusCode: '301',
-        headers: { 'location': `${URL}/${dstKey}` },
-        body: '',
-      })
-      )
-      .catch(err => callback(err));
   });
 
   // S3.getObject({ Bucket: SRC_BUCKET, Key: srcKey }).promise()
@@ -320,7 +315,7 @@ var ResizeAndCopy = function (event, context, callback) {
   //   })
   //   )
   //   .catch(err => callback(err))
-}
+};
 
 // - read the original file from the src S3 bucket with "images/" prefix stripped,
 // - store it in the destination S3 bucket with the
