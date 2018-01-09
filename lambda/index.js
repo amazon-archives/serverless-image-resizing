@@ -7,6 +7,7 @@ const Sharp = require('sharp');
 
 // These need to be defined in AWS with the Lambda
 const SRC_BUCKET = process.env.SRC_BUCKET;
+const ORIG_SRC_BUCKET = process.env.ORIG_SRC_BUCKET;
 const DST_BUCKET = process.env.DST_BUCKET;
 const URL = process.env.URL;
 
@@ -14,9 +15,8 @@ const URL = process.env.URL;
 // JSON file generated from the "liip_imagine -> filter_sets" section of
 // neighbourly/app/config.yml file.
 //
-// A one-off way of producing this is to cut and paste the liip_image section
-// from the config into a new file, and run the following command:
-// $ ruby -ryaml -rjson -e 'puts JSON.pretty_generate(YAML.load(ARGF)["liip_imagine"]["filter_sets"])' < liip_imagine_filter_sets.yaml > liip_imagine_filter_sets.json
+// This is generated via the neighbourly:create-serverless-image-resizing-config Neighbourly symfony command
+// ALSO see the ansible playbook build-serverless-image-resizing which generates and copies the file in place (among building this whole module)
 var filterSet = require('./liip_imagine_filter_sets.json');
 
 
@@ -237,23 +237,65 @@ var ResizeAndCopy = function (event, context, callback) {
   // - resize it according to the specified filter parameters
   // - store it in the destination S3 bucket
   // - redirect the client to look for the newly created image.
-  S3.getObject({ Bucket: SRC_BUCKET, Key: srcKey }).promise()
-    .then(data => Resize(data.Body, selectedFilterSet))
-    .then(img => S3.putObject({
-      Body: img.data,
-      Bucket: DST_BUCKET,
-      ContentType: img.mimeType,
-      CacheControl: "public, max-age=2592000",
-      Key: dstKey,
-    }).promise()
-    )
-    .then(() => callback(null, {
-      statusCode: '301',
-      headers: { 'location': `${URL}/${dstKey}` },
-      body: '',
-    })
-    )
-    .catch(err => callback(err))
+
+  S3.getObject({ Bucket: SRC_BUCKET, Key: srcKey }, function(err, data) {
+      var bucketData;
+
+      if (err) {
+        console.log(err, err.stack);
+        // we assume here that the object doesn't exist and we try to get it from the original bucket (production)
+        S3.getObject({ Bucket: ORIG_SRC_BUCKET, Key: srcKey }).promise().then(data => S3.putObject({
+            Body: data,Body,
+            Bucket: SRC_BUCKET,
+            Key: srcKey
+        }));
+
+        S3.getObject({ Bucket: SRC_BUCKET, Key: srcKey }, function(err, data) {
+          if (err) {
+            callback(err);
+          }
+
+          bucketData = data;
+        });
+      } else {
+        bucketData = data;
+      }
+
+      var img = Resize(bucketData.Body, selectedFilterSet);
+
+      S3.putObject({
+        Body: img.data,
+        Bucket: DST_BUCKET,
+        ContentType: img.mimeType,
+        CacheControl: "public, max-age=2592000",
+        Key: dstKey,
+      }).promise()
+      .then(() => callback(null, {
+        statusCode: '301',
+        headers: { 'location': `${URL}/${dstKey}` },
+        body: '',
+      })
+      )
+      .catch(err => callback(err));
+  });
+
+  // S3.getObject({ Bucket: SRC_BUCKET, Key: srcKey }).promise()
+  //   .then(data => Resize(data.Body, selectedFilterSet))
+  //   .then(img => S3.putObject({
+  //     Body: img.data,
+  //     Bucket: DST_BUCKET,
+  //     ContentType: img.mimeType,
+  //     CacheControl: "public, max-age=2592000",
+  //     Key: dstKey,
+  //   }).promise()
+  //   )
+  //   .then(() => callback(null, {
+  //     statusCode: '301',
+  //     headers: { 'location': `${URL}/${dstKey}` },
+  //     body: '',
+  //   })
+  //   )
+  //   .catch(err => callback(err))
 }
 
 // - read the original file from the src S3 bucket with "images/" prefix stripped,
