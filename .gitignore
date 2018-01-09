@@ -18,3 +18,6 @@ lambda/node_modules
 # IDE files
 .vscode/**
 .idea
+
+# We should always generate this to have the latest version
+lambda/liip_imagine_filter_sets.json

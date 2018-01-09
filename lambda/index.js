@@ -4,7 +4,8 @@ const AWSXRay = require('aws-xray-sdk-core');
 const AWS = AWSXRay.captureAWS(require('aws-sdk'));
 const S3 = new AWS.S3();
 const Sharp = require('sharp');
-
+const winston = require('winston');
+AWSXRay.setLogger(winston);
 
 // These need to be defined in AWS with the Lambda
 const SRC_BUCKET = process.env.SRC_BUCKET;
@@ -12,6 +13,7 @@ const ORIG_SRC_BUCKET = process.env.ORIG_SRC_BUCKET;
 const DST_BUCKET = process.env.DST_BUCKET;
 const URL = process.env.URL;
 
+winston.info('Starting up for redirect URL ' + URL);
 
 // JSON file generated from the "liip_imagine -> filter_sets" section of
 // neighbourly/app/config.yml file.
@@ -243,10 +245,10 @@ var ResizeAndCopy = function (event, context, callback) {
       var bucketData;
 
       if (err) {
-        console.log(err, err.stack);
+        winston.log(info, "Error %s: %j", err, err.stack);
         // we assume here that the object doesn't exist and we try to get it from the original bucket (production)
         S3.getObject({ Bucket: ORIG_SRC_BUCKET, Key: srcKey }).promise().then(data => S3.putObject({
-            Body: data,Body,
+            Body: data.Body,
             Bucket: SRC_BUCKET,
             Key: srcKey
         }));
