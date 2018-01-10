@@ -253,7 +253,9 @@ const ResizeAndCopy = function (path, context, callback) {
 
     logger.log('info', 'Storing resized image', DST_BUCKET, dstKey);
 
-    logger.log('info', 'Saving then redirecting to', `${URL}/${dstKey}`);
+    logger.log('info', 'Saving then redirecting to', `${URL}${dstKey}`);
+
+    logger.log('info', 'img data', img.data);
 
     S3.putObject({
       Body: img.data,
@@ -262,9 +264,17 @@ const ResizeAndCopy = function (path, context, callback) {
       CacheControl: "public, max-age=2592000",
       Key: dstKey
     }).promise()
+    .then(function() {
+      // TODO dev only! On prod we use CloudFront!
+      return S3.putObjectAcl({
+        Bucket: DST_BUCKET,
+        Key: dstKey,
+        ACL: 'public-read'
+      }).promise();
+    })
     .then(() => callback(null, {
       statusCode: 301,
-      headers: { 'Location': `${URL}/${dstKey}` },
+      headers: { 'Location': `${URL}${dstKey}` },
       body: null,
     })
     )
@@ -305,24 +315,6 @@ const ResizeAndCopy = function (path, context, callback) {
         storeResizedImage(data.Body, selectedFilterSet);
       }
   });
-
-  // S3.getObject({ Bucket: SRC_BUCKET, Key: srcKey }).promise()
-  //   .then(data => Resize(data.Body, selectedFilterSet))
-  //   .then(img => S3.putObject({
-  //     Body: img.data,
-  //     Bucket: DST_BUCKET,
-  //     ContentType: img.mimeType,
-  //     CacheControl: "public, max-age=2592000",
-  //     Key: dstKey,
-  //   }).promise()
-  //   )
-  //   .then(() => callback(null, {
-  //     statusCode: '301',
-  //     headers: { 'location': `${URL}/${dstKey}` },
-  //     body: '',
-  //   })
-  //   )
-  //   .catch(err => callback(err))
 };
 
 // - read the original file from the src S3 bucket with "images/" prefix stripped,
@@ -383,16 +375,12 @@ exports.handler = (event, context, callback) => {
 
   logger.log('info', 'path', path);
   logger.log('info', path.substr(0, 13));
-  // console.log("event.queryStringParameters.key : " + event.queryStringParameters.key)
-  // console.log("event.queryStringParameters.key.substr(0, 13) : " + event.queryStringParameters.key.substr(0, 13) )
 
-  // If it's for an image that needs resizing...
   if (path.substr(0, 13) === 'images/cache/') {
     logger.log('info', 'Image resize and copy');
     return ResizeAndCopy(path, context, callback)
   } else {
-    logger.log('info', 'File copy');
-    // It's just something that used to be served up via direct_file_link
+    logger.log('info', 'File copy / direct_file_link');
     return Copy(event, context, callback)
   }
 };
