@@ -199,9 +199,17 @@ var getCorrectMimeType = function (filename, mimeType) {
 }
 
 const ResizeAndCopy = function (event, context, callback) {
+  logger.log('info', 'filterSet', filterSet);
 
-  const path = event.queryStringParameters.key;
+  let path = event.queryStringParameters.key;
+
+  if (path[0] === '/') {
+    path = path.substr(1);
+  }
+
   const pieces = path.toString().split('/');
+
+  logger.log('info', 'patch pieces', pieces);
 
   // Valid paths will look something like
   // images/cache/_filter_type_/_collection_/_filename_._filetype_?_optional_cachebuster_
@@ -377,8 +385,10 @@ exports.handler = (event, context, callback) => {
 
   // If it's for an image that needs resizing...
   if (event.queryStringParameters.key.substr(0, 14) === '/images/cache/') {
+    logger.log('info', 'Image resize and copy');
     return ResizeAndCopy(event, context, callback)
   } else {
+    logger.log('info', 'File copy');
     // It's just something that used to be served up via direct_file_link
     return Copy(event, context, callback)
   }
