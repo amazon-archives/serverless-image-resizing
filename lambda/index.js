@@ -198,14 +198,8 @@ var getCorrectMimeType = function (filename, mimeType) {
   return newMimeType;
 }
 
-const ResizeAndCopy = function (event, context, callback) {
+const ResizeAndCopy = function (path, context, callback) {
   logger.log('info', 'filterSet', filterSet);
-
-  let path = event.queryStringParameters.key;
-
-  if (path[0] === '/') {
-    path = path.substr(1);
-  }
 
   const pieces = path.toString().split('/');
 
@@ -259,17 +253,19 @@ const ResizeAndCopy = function (event, context, callback) {
 
     logger.log('info', 'Storing resized image', DST_BUCKET, dstKey);
 
+    logger.log('info', 'Saving then redirecting to', `${URL}/${dstKey}`);
+
     S3.putObject({
       Body: img.data,
       Bucket: DST_BUCKET,
       ContentType: img.mimeType,
       CacheControl: "public, max-age=2592000",
-      Key: dstKey,
+      Key: dstKey
     }).promise()
     .then(() => callback(null, {
-      statusCode: '301',
-      headers: { 'location': `${URL}/${dstKey}` },
-      body: '',
+      statusCode: 301,
+      headers: { 'Location': `${URL}/${dstKey}` },
+      body: null,
     })
     )
     .catch(err => callback(err));
@@ -357,7 +353,9 @@ var Copy = function (event, context, callback) {
   // served directly by the bucket public web interface.
   const dstKey = path.split('?')[0];
 
-  console.log('Copying. arn:aws:s3:::%s/%s ==> arn:aws:s3:::%s/%s', SRC_BUCKET, srcKey, DST_BUCKET, dstKey);
+  logger.log('info', 'Copying. arn:aws:s3:::%s/%s ==> arn:aws:s3:::%s/%s', SRC_BUCKET, srcKey, DST_BUCKET, dstKey);
+
+  logger.log('info', 'Saving then redirecting to', `${URL}/${dstKey}`);
 
   S3.getObject({ Bucket: SRC_BUCKET, Key: srcKey }).promise()
     .then(data => S3.putObject({
@@ -368,25 +366,30 @@ var Copy = function (event, context, callback) {
     }).promise()
     )
     .then(() => callback(null, {
-      statusCode: '301',
-      headers: { 'location': `${URL}/${dstKey}` },
-      body: '',
+      statusCode: 301,
+      headers: { 'Location': `${URL}/${dstKey}` },
+      body: null,
     })
     )
-    .catch(err => callback(err))
-}
+    .catch(err => callback(err));
+};
 
 exports.handler = (event, context, callback) => {
-  logger.log('info', 'event query string parameters', event.queryStringParameters);
-  logger.log('info', '/images/cache/');
-  logger.log('info', event.queryStringParameters.key.substr(0, 14));
+  let path = event.queryStringParameters.key;
+
+  if (path[0] === '/') {
+    path = path.substr(1);
+  }
+
+  logger.log('info', 'path', path);
+  logger.log('info', path.substr(0, 13));
   // console.log("event.queryStringParameters.key : " + event.queryStringParameters.key)
   // console.log("event.queryStringParameters.key.substr(0, 13) : " + event.queryStringParameters.key.substr(0, 13) )
 
   // If it's for an image that needs resizing...
-  if (event.queryStringParameters.key.substr(0, 14) === '/images/cache/') {
+  if (path.substr(0, 13) === 'images/cache/') {
     logger.log('info', 'Image resize and copy');
-    return ResizeAndCopy(event, context, callback)
+    return ResizeAndCopy(path, context, callback)
   } else {
     logger.log('info', 'File copy');
     // It's just something that used to be served up via direct_file_link
