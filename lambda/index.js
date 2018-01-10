@@ -369,12 +369,14 @@ var Copy = function (event, context, callback) {
 }
 
 exports.handler = (event, context, callback) => {
-
+  logger.log('info', 'event query string parameters', event.queryStringParameters);
+  logger.log('info', '/images/cache/');
+  logger.log('info', event.queryStringParameters.key.substr(0, 13));
   // console.log("event.queryStringParameters.key : " + event.queryStringParameters.key)
   // console.log("event.queryStringParameters.key.substr(0, 13) : " + event.queryStringParameters.key.substr(0, 13) )
 
   // If it's for an image that needs resizing...
-  if (event.queryStringParameters.key.substr(0, 13) === 'images/cache/') {
+  if (event.queryStringParameters.key.substr(0, 13) === '/images/cache/') {
     return ResizeAndCopy(event, context, callback)
   } else {
     // It's just something that used to be served up via direct_file_link

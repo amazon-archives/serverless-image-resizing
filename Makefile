@@ -6,7 +6,7 @@ image:
 	docker build --tag amazonlinux:nodejs .
 
 docker:
-	docker run --rm --volume ${PWD}/lambda:/build amazonlinux:nodejs npm install --production
+	docker run --rm --volume ${PWD}/lambda:/build amazonlinux:nodejs npm prune --production && npm install --production
 
 package: image docker
 
