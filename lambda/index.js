@@ -14,6 +14,7 @@ const ORIG_SRC_BUCKET = process.env.ORIG_SRC_BUCKET;
 const DST_BUCKET = process.env.DST_BUCKET;
 const URL = process.env.URL;
 
+logger.log('info', 'process.env', process.env);
 logger.log('info', 'Redirect URL', URL);
 logger.log('info', 'SRC_BUCKET', SRC_BUCKET);
 logger.log('info', 'ORIG_SRC_BUCKET', ORIG_SRC_BUCKET);
@@ -26,7 +27,6 @@ logger.log('info', 'DST_BUCKET', DST_BUCKET);
 // ALSO see the ansible playbook build-serverless-image-resizing which generates and copies the file in place (among building this whole module)
 var filterSet = require('./liip_imagine_filter_sets.json');
 
-
 // Implement a subset of the Liip Imagine filters
 // (only the ones that appear in the config)
 //
@@ -36,7 +36,6 @@ var filterSet = require('./liip_imagine_filter_sets.json');
 // If you add different kinds of filters or parameters to that config
 // you may need to modify this function to support them
 var Resize = function (imgData, filterSet) {
-
   const filters = filterSet.filters;
   var imageFormat;
   var jpegOptions = {};
@@ -119,14 +118,14 @@ var Resize = function (imgData, filterSet) {
   }
 
   // jpegs may have optional quality setting
-  if (filterSet.hasOwnProperty('quality')) {
+  if (filterSet.hasOwnProperty('quality') && filterSet.Quality) {
     jpegOptions = { quality: filterSet.Quality };
   }
 
 
   return img.metadata()
     .then(metadata => {
-      if(metadata.format == 'gif') {
+      if(metadata.format === 'gif') {
         // GIF is not a Sharp supported output format, so
         // we have to kinda cheat. Set the output format and the mimeType
         // to PNG, but keep the actual filename with the GIF extension
@@ -137,17 +136,19 @@ var Resize = function (imgData, filterSet) {
       }
 
       // JPEGs have additional settings for quality
-      if (imageFormat === "jpeg") {
+      if (imageFormat === "jpeg" && jpegOptions) {
         outputOptions = jpegOptions;
+        logger.log('info', 'output options', outputOptions);
       }
 
-      return img.toFormat(imageFormat, outputOptions)
-        .toBuffer()
-        .then(buffer => {
-          return { data: buffer, mimeType: "image/" + imageFormat }
-        })
+      return img.toFormat(imageFormat, outputOptions).toBuffer();
     })
-}
+    .then(data => {
+      logger.log('info', 'mime type', imageFormat);
+      return { data: data, mimeType: "image/" + imageFormat }
+    })
+    .catch(err => { logger.log('error', 'resizing error', err) });
+};
 
 //
 // Some source files have either a default or explicitly incorrect
@@ -203,8 +204,6 @@ const ResizeAndCopy = function (path, context, callback) {
 
   const pieces = path.toString().split('/');
 
-  logger.log('info', 'patch pieces', pieces);
-
   // Valid paths will look something like
   // images/cache/_filter_type_/_collection_/_filename_._filetype_?_optional_cachebuster_
 
@@ -247,37 +246,34 @@ const ResizeAndCopy = function (path, context, callback) {
   // - store it in the destination S3 bucket
   // - redirect the client to look for the newly created image.
   const storeResizedImage = function(data, filterSet) {
-    logger.log('info', 'Selected filter set', filterSet);
-
-    const img = Resize(data, filterSet);
+    const imgPromise = Resize(data, filterSet);
 
     logger.log('info', 'Storing resized image', DST_BUCKET, dstKey);
-
     logger.log('info', 'Saving then redirecting to', `${URL}${dstKey}`);
 
-    logger.log('info', 'img data', img.data);
-
-    S3.putObject({
-      Body: img.data,
-      Bucket: DST_BUCKET,
-      ContentType: img.mimeType,
-      CacheControl: "public, max-age=2592000",
-      Key: dstKey
-    }).promise()
-    .then(function() {
-      // TODO dev only! On prod we use CloudFront!
-      return S3.putObjectAcl({
+    imgPromise.then(img => {
+      S3.putObject({
+        Body: img.data,
         Bucket: DST_BUCKET,
-        Key: dstKey,
-        ACL: 'public-read'
-      }).promise();
+        ContentType: img.mimeType,
+        CacheControl: "public, max-age=2592000",
+        Key: dstKey
+      }).promise()
+      .then(function() {
+        // TODO dev only! On prod we use CloudFront!
+        return S3.putObjectAcl({
+          Bucket: DST_BUCKET,
+          Key: dstKey,
+          ACL: 'public-read'
+        }).promise();
+      })
+      .then(() => callback(null, {
+        statusCode: 301,
+        headers: { 'Location': `${URL}${dstKey}` },
+        body: null,
+      })
+      );
     })
-    .then(() => callback(null, {
-      statusCode: 301,
-      headers: { 'Location': `${URL}${dstKey}` },
-      body: null,
-    })
-    )
     .catch(err => callback(err));
   };
 
@@ -286,7 +282,7 @@ const ResizeAndCopy = function (path, context, callback) {
         logger.log('warn', "%s --- %j", err, err.stack);
 
         // we assume here that the object doesn't exist and we try to get it from the original bucket (production)
-        S3.getObject({ Bucket: ORIG_SRC_BUCKET, Key: srcKey }, function(err, data) {
+        S3.getObject({ Bucket: ORIG_SRC_BUCKET, Key: srcKey }, function(err, getData) {
           if (err) {
             logger.log('error', 'Tried to get from orig bucket', err);
 
@@ -296,7 +292,7 @@ const ResizeAndCopy = function (path, context, callback) {
           logger.log('info', 'successfully retrieved data from orig bucket');
 
           S3.putObject({
-              Body: data.Body,
+              Body: getData.Body,
               Bucket: SRC_BUCKET,
               Key: srcKey
           }, function(err, data) {
@@ -305,7 +301,7 @@ const ResizeAndCopy = function (path, context, callback) {
             } else {
                 logger.log('info', 'Stored image in src bucket');
 
-                storeResizedImage(data.Body, selectedFilterSet);
+                storeResizedImage(getData.Body, selectedFilterSet);
             }
           });
         });
@@ -329,7 +325,8 @@ var Copy = function (event, context, callback) {
 
   if (pieces.length < 3 || pieces[0] !== 'images') {
     // Send generic 404 to client for clearly invalid paths
-    console.log("Invalid path format for file specified : " + path)
+    logger.log('warn', "Invalid path format for file specified : " + path);
+
     callback(null, {
       statusCode: '404',
       body: "Not Found."
@@ -346,7 +343,6 @@ var Copy = function (event, context, callback) {
   const dstKey = path.split('?')[0];
 
   logger.log('info', 'Copying. arn:aws:s3:::%s/%s ==> arn:aws:s3:::%s/%s', SRC_BUCKET, srcKey, DST_BUCKET, dstKey);
-
   logger.log('info', 'Saving then redirecting to', `${URL}/${dstKey}`);
 
   S3.getObject({ Bucket: SRC_BUCKET, Key: srcKey }).promise()
@@ -374,12 +370,13 @@ exports.handler = (event, context, callback) => {
   }
 
   logger.log('info', 'path', path);
-  logger.log('info', path.substr(0, 13));
 
   if (path.substr(0, 13) === 'images/cache/') {
     logger.log('info', 'Image resize and copy');
     return ResizeAndCopy(path, context, callback)
   } else {
+    // TODO this doesn't seem to be in play yet?
+    // TODO not supported on dev yet! See double S3 copy in ResizeAndCopy!
     logger.log('info', 'File copy / direct_file_link');
     return Copy(event, context, callback)
   }
