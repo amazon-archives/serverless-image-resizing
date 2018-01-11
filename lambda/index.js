@@ -13,8 +13,10 @@ const SRC_BUCKET = process.env.SRC_BUCKET;
 const ORIG_SRC_BUCKET = process.env.ORIG_SRC_BUCKET;
 const DST_BUCKET = process.env.DST_BUCKET;
 const URL = process.env.URL;
+const STAGE = process.env.stage;
 
 logger.log('info', 'process.env', process.env);
+logger.log('info', 'STAGE', STAGE);
 logger.log('info', 'Redirect URL', URL);
 logger.log('info', 'SRC_BUCKET', SRC_BUCKET);
 logger.log('info', 'ORIG_SRC_BUCKET', ORIG_SRC_BUCKET);
@@ -260,12 +262,19 @@ const ResizeAndCopy = function (path, context, callback) {
         Key: dstKey
       }).promise()
       .then(function() {
-        // TODO dev only! On prod we use CloudFront!
-        return S3.putObjectAcl({
-          Bucket: DST_BUCKET,
-          Key: dstKey,
-          ACL: 'public-read'
-        }).promise();
+        if (STAGE !== 'prod') {
+          logger.log('info', 'Setting object ACL - dev only - not required when used with CloudFormation!');
+
+          return S3.putObjectAcl({
+            Bucket: DST_BUCKET,
+            Key: dstKey,
+            ACL: 'public-read'
+          }).promise();
+        }
+
+        logger.log('info', 'Returning empty promise. ;-(');
+
+        return Promise.resolve();
       })
       .then(() => callback(null, {
         statusCode: 301,
@@ -281,30 +290,37 @@ const ResizeAndCopy = function (path, context, callback) {
       if (err) {
         logger.log('warn', "%s --- %j", err, err.stack);
 
-        // we assume here that the object doesn't exist and we try to get it from the original bucket (production)
-        S3.getObject({ Bucket: ORIG_SRC_BUCKET, Key: srcKey }, function(err, getData) {
-          if (err) {
-            logger.log('error', 'Tried to get from orig bucket', err);
-
-            callback(err);
-          }
-
-          logger.log('info', 'successfully retrieved data from orig bucket');
-
-          S3.putObject({
-              Body: getData.Body,
-              Bucket: SRC_BUCKET,
-              Key: srcKey
-          }, function(err, data) {
+        if (STAGE !== 'prod') {
+          logger.log('info', 'Trying to get from orig src bucket %s with key %s', ORIG_SRC_BUCKET, srcKey);
+          // we assume here that the object doesn't exist and we try to get it from the original bucket (production)
+          S3.getObject({ Bucket: ORIG_SRC_BUCKET, Key: srcKey }, function(err, getData) {
             if (err) {
-              logger.log('error', 'Tried to save to src bucket', err);
-            } else {
-                logger.log('info', 'Stored image in src bucket');
+              logger.log('error', 'Failed to get from orig src bucket', err);
 
-                storeResizedImage(getData.Body, selectedFilterSet);
+              callback(err);
+              return err;
             }
+
+            logger.log('info', 'successfully retrieved data from orig src bucket');
+
+            S3.putObject({
+                Body: getData.Body,
+                Bucket: SRC_BUCKET,
+                Key: srcKey
+            }, function(err, data) {
+              if (err) {
+                logger.log('error', 'Failed to save to src bucket', err);
+              } else {
+                  logger.log('info', 'Stored image in src bucket');
+
+                  storeResizedImage(getData.Body, selectedFilterSet);
+              }
+            });
           });
-        });
+        } else {
+          logger.log('warn', 'Object not found.');
+          callback('Object not found.');
+        }
       } else {
         logger.log('info', 'Found image in src bucket');
 
