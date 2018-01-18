@@ -32,10 +32,10 @@ Resizes images on the fly using Amazon S3, AWS Lambda, and Amazon API Gateway. U
 
 **Note:** If you create the Lambda function yourself, make sure to select Node.js version 6.10.
 
-4. Restrict resize resolutions
+4. Restrict resize dimensions 
 
-	To restrict the resolutions client services can convert images to, set the environment variable ```ALLOWED_RESOLUTIONS``` to a string in the format *(HEIGHT)x(WIDTH),(HEIGHT)x(WIDTH),...(HEIGHT)x(WIDTH)*.
-	For example: *200x150,300x200,800x600*.
+	To restrict the resolutions client services can convert images to, set the environment variable ```ALLOWED_DIMENSIONS``` to a string in the format *(HEIGHT)x(WIDTH),(HEIGHT)x(WIDTH),...(HEIGHT)x(WIDTH)*.
+	For example: *300x300,90x90,40x40*.
 
 
 ## License

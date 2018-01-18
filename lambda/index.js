@@ -8,15 +8,24 @@ const Sharp = require('sharp');
 
 const BUCKET = process.env.BUCKET;
 const URL = process.env.URL;
-const ALLOWED_RESOLUTIONS = process.env.ALLOWED_RESOLUTIONS ? new Set(process.env.ALLOWED_RESOLUTIONS.split(/\s*,\s*/)) : new Set([]);
+const ALLOWED_DIMENSIONS = new Set();
+
+if (process.env.ALLOWED_DIMENSIONS) {
+  const dimensions = process.env.ALLOWED_DIMENSIONS.split(/\s*,\s*/);
+  dimensions.forEach((dimension) => ALLOWED_DIMENSIONS.add(dimension));
+}
 
 exports.handler = function(event, context, callback) {
   const key = event.queryStringParameters.key;
   const match = key.match(/((\d+)x(\d+))\/(.*)/);
+  const dimensions = match[1];
+  const width = parseInt(match[2], 10);
+  const height = parseInt(match[3], 10);
+  const originalKey = match[4];
 
   //Check if requested resolution is allowed
-  if(0 != ALLOWED_RESOLUTIONS.size && !ALLOWED_RESOLUTIONS.has(match[1]) ) {
-    callback(null, {
+  if(ALLOWED_DIMENSIONS.size > 0 && !ALLOWED_DIMENSIONS.has(dimensions)) {
+     callback(null, {
       statusCode: '403',
       headers: {},
       body: '',
@@ -24,10 +33,7 @@ exports.handler = function(event, context, callback) {
     return;
   }
 
-  const width = parseInt(match[2], 10);
-  const height = parseInt(match[3], 10);
-  const originalKey = match[4];
-
+  //Get object from S3, resize and store backe to S3
   S3.getObject({Bucket: BUCKET, Key: originalKey}).promise()
     .then(data => Sharp(data.Body)
       .resize(width, height)
