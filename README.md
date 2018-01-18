@@ -8,19 +8,19 @@ Resizes images on the fly using Amazon S3, AWS Lambda, and Amazon API Gateway. U
 
 1. Build the Lambda function
 
-   The Lambda function uses [sharp][sharp] for image resizing which requires native extensions. In order to run on Lambda, it must be packaged on Amazon Linux. You can accomplish this in one of two ways:
+	The Lambda function uses [sharp][sharp] for image resizing which requires native extensions. In order to run on Lambda, it must be packaged on Amazon Linux. You can accomplish this in one of two ways:
 
    - Upload the contents of the `lambda` subdirectory to a [Amazon EC2 instance running Amazon Linux][amazon-linux] and run `npm install`, or
 
    - Use the Amazon Linux Docker container image to build the package using your local system. This repo includes Makefile that will download Amazon Linux, install Node.js and developer tools, and build the extensions using Docker. Run `make all`.
 
-1. Deploy the CloudFormation stack
+2. Deploy the CloudFormation stack
 
-  Run `bin/deploy` to deploy the CloudFormation stack. It will create a temporary Amazon S3 bucket, package and upload the function, and create the Lambda function, Amazon API Gateway RestApi, and an S3 bucket for images via CloudFormation.
+	Run `bin/deploy` to deploy the CloudFormation stack. It will create a temporary Amazon S3 bucket, package and upload the function, and create the Lambda function, Amazon API Gateway RestApi, and an S3 bucket for images via CloudFormation.
 
   The deployment script requires the [AWS CLI][cli] version 1.11.19 or newer to be installed.
 
-1. Test the function
+3. Test the function
 
 	Upload an image to the S3 bucket and try to resize it via your web browser to different sizes, e.g. with an image uploaded in the bucket called image.png:
 
@@ -31,6 +31,12 @@ Resizes images on the fly using Amazon S3, AWS Lambda, and Amazon API Gateway. U
 	You can find the BucketWebsiteUrl in the table of outputs displayed on a successful invocation of the deploy script.
 
 **Note:** If you create the Lambda function yourself, make sure to select Node.js version 6.10.
+
+4. Restrict resize resolutions
+
+	To restrict the resolutions client services can convert images to, set the environment variable ```ALLOWED_RESOLUTIONS``` to a string in the format *(HEIGHT)x(WIDTH),(HEIGHT)x(WIDTH),...(HEIGHT)x(WIDTH)*.
+	For example: *200x150,300x200,800x600*.
+
 
 ## License
 
