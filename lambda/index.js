@@ -23,7 +23,6 @@ exports.handler = function(event, context, callback) {
   const height = parseInt(match[3], 10);
   const originalKey = match[4];
 
-  //Check if requested resolution is allowed
   if(ALLOWED_DIMENSIONS.size > 0 && !ALLOWED_DIMENSIONS.has(dimensions)) {
      callback(null, {
       statusCode: '403',
@@ -33,7 +32,6 @@ exports.handler = function(event, context, callback) {
     return;
   }
 
-  //Get object from S3, resize and store backe to S3
   S3.getObject({Bucket: BUCKET, Key: originalKey}).promise()
     .then(data => Sharp(data.Body)
       .resize(width, height)
