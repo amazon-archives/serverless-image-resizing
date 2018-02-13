@@ -6,7 +6,7 @@ stack_name=ServerlessImageResize
 region="$(aws configure get region)"
 bucket_name="temp-serverless-resize-$(openssl rand -hex 8)"
 account_id="$(aws sts get-caller-identity --query Account --output text \
-  | xargs echo -n)"
+  | xargs echo -n | tr -d '\r')"
 
 set -o xtrace
 
