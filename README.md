@@ -33,7 +33,7 @@ image will be served from S3 directly.
     CloudFormation.
 
     The deployment script requires the [AWS CLI][cli] version 1.11.19 or newer
-    to be installed.
+    to be installed.  Be sure to [set your AWS credentials][aws-configure] using `aws configure`
 
 3. Test the function
 
@@ -64,3 +64,4 @@ This reference architecture sample is [licensed][license] under Apache 2.0.
 [sharp]: https://github.com/lovell/sharp
 [amazon-linux]: https://aws.amazon.com/blogs/compute/nodejs-packages-in-lambda/
 [cli]: https://aws.amazon.com/cli/
+[aws-configure]: https://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html
