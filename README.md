@@ -33,7 +33,7 @@ image will be served from S3 directly.
     CloudFormation.
 
     The deployment script requires the [AWS CLI][cli] version 1.11.19 or newer
-    to be installed.
+    to be installed. (`aws configure` is required.)
 
 3. Test the function
 
@@ -41,9 +41,14 @@ image will be served from S3 directly.
     to different sizes, e.g. with an image uploaded in the bucket called
     image.png:
 
+    - // (width)x(height)
     - http://[BucketWebsiteHost]/300x300/path/to/image.png
     - http://[BucketWebsiteHost]/90x90/path/to/image.png
     - http://[BucketWebsiteHost]/40x40/path/to/image.png
+    - // (long-side)x
+    - http://[BucketWebsiteHost]/300x/path/to/image.png
+    - http://[BucketWebsiteHost]/90x/path/to/image.png
+    - http://[BucketWebsiteHost]/40x/path/to/image.png
 
     You can find the `BucketWebsiteUrl` in the table of outputs displayed on a
     successful invocation of the deploy script.
@@ -52,7 +57,7 @@ image will be served from S3 directly.
 
     To restrict the dimensions the function will create, set the environment
     variable `ALLOWED_DIMENSIONS` to a string in the format
-    *(HEIGHT)x(WIDTH),(HEIGHT)x(WIDTH),...*.
+    *(WIDTH)x(HEIGHT),(WIDTH)x(HEIGHT),...*.
 
     For example: *300x300,90x90,40x40*.
 
