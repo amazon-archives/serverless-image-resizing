@@ -15,7 +15,7 @@ if (process.env.ALLOWED_DIMENSIONS) {
   dimensions.forEach((dimension) => ALLOWED_DIMENSIONS.add(dimension));
 }
 
-exports.handler = function(event, context, callback) {
+exports.handler = function (event, context, callback) {
   const key = event.queryStringParameters.key;
   const match = key.match(/((\d*)x(\d*))\/(.*)/);
   const dimensions = match[1];
@@ -25,8 +25,8 @@ exports.handler = function(event, context, callback) {
   };
   const originalKey = match[4];
 
-  if(ALLOWED_DIMENSIONS.size > 0 && !ALLOWED_DIMENSIONS.has(dimensions)) {
-     callback(null, {
+  if (ALLOWED_DIMENSIONS.size > 0 && !ALLOWED_DIMENSIONS.has(dimensions)) {
+    callback(null, {
       statusCode: '403',
       headers: {},
       body: '',
@@ -34,26 +34,38 @@ exports.handler = function(event, context, callback) {
     return;
   }
 
-  S3.getObject({Bucket: BUCKET, Key: originalKey}).promise()
-    .then(data => Sharp(data.Body)
-      .resize(size.width || size.height, size.height || size.width)
-      .max()
+  const imageResize = (img) => {
+    img
       .rotate()
       .toFormat('png')
       .toBuffer()
-    )
-    .then(buffer => S3.putObject({
+      .then(buffer => S3.putObject({
         Body: buffer,
         Bucket: BUCKET,
         ContentType: 'image/png',
         Key: key,
-      }).promise()
-    )
-    .then(() => callback(null, {
+      }).promise())
+      .then(() => callback(null, {
         statusCode: '301',
-        headers: {'location': `${URL}/${key}`},
+        headers: {
+          'location': `${URL}/${key}`
+        },
         body: '',
-      })
-    )
-    .catch(err => callback(err))
+      }))
+      .catch(err => callback(err))
+  };
+
+  S3.getObject({
+      Bucket: BUCKET,
+      Key: originalKey
+    }).promise()
+    .then(data => {
+      const img = Sharp(data.Body);
+      if (size.width && size.height) {
+        return imageResize(img.resize(size.width, size.height));
+      }
+      // resized long
+      const resizedLong = Math.round(size.width || size.height || 900);
+      return imageResize(img.resize(resizedLong, resizedLong).max());
+    })
 }
