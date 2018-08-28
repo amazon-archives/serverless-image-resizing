@@ -8,6 +8,7 @@ const Sharp = require('sharp');
 
 const BUCKET = process.env.BUCKET;
 const URL = process.env.URL;
+const REDIRECT_CODE = process.env.REDIRECT_CODE || '301';
 const ALLOWED_DIMENSIONS = new Set();
 
 if (process.env.ALLOWED_DIMENSIONS) {
@@ -46,7 +47,7 @@ exports.handler = function(event, context, callback) {
       }).promise()
     )
     .then(() => callback(null, {
-        statusCode: '301',
+        statusCode: REDIRECT_CODE,
         headers: {'location': `${URL}/${key}`},
         body: '',
       })
