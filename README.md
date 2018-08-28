@@ -1,3 +1,7 @@
+# Archived
+
+See https://github.com/awslabs/serverless-image-handler instead.
+
 # Serverless Image Resizing
 
 ## Description
